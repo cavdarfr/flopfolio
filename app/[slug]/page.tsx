@@ -26,7 +26,8 @@ export default async function Page({
 }) {
     const slug = (await params).slug;
     const user = await getUserBySlug(slug);
-
+    console.log("user", user);
+    console.log("params", params);
     if (!user) {
         notFound();
     }
@@ -153,43 +154,4 @@ export default async function Page({
             </div>
         </div>
     );
-}
-
-{
-    /* <div className="flex flex-col flex-1 hidden">
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
-                                                {business.name}
-                                            </h3>
-                                            <Badge
-                                                variant="outline"
-                                                className="gap-1.5"
-                                            >
-                                                <span
-                                                    className={cn(
-                                                        "size-2 rounded-full bg-amber-500",
-                                                        statusConfig[
-                                                            business.status as keyof typeof statusConfig
-                                                        ]?.color
-                                                    )}
-                                                    aria-hidden="true"
-                                                />
-                                                {
-                                                    statusConfig[
-                                                        business.status as keyof typeof statusConfig
-                                                    ]?.label
-                                                }
-                                            </Badge>
-                                        </div>
-                                        <p className="text-zinc-600 dark:text-zinc-300 mb-4">
-                                            {business.description}
-                                        </p>
-                                        <Separator className="my-4" />
-                                        <div className="flex gap-3">
-                                            <LightbulbIcon className="w-6 h-6 text-yellow-500 flex-shrink-0 mt-1" />
-                                            <p className="text-zinc-600 dark:text-zinc-300">
-                                                {business.lessons}
-                                            </p>
-                                        </div>
-                                    </div> */
 }
