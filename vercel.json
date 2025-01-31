@@ -1,0 +1,7 @@
+{
+    "functions": {
+      "dashboard": {
+        "maxDuration": 30
+      }
+    }
+  }
