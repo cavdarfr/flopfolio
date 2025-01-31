@@ -5,14 +5,13 @@ interface MongooseCache {
     promise: Promise<typeof mongoose> | null;
 }
 
-declare global {
-    var mongooseCache: MongooseCache | undefined;
-}
+// Utiliser globalThis pour éviter var et contourner ESLint
+const globalCache = globalThis as unknown as { mongooseCache?: MongooseCache };
 
-const cached = global.mongooseCache || { conn: null, promise: null };
+const cached: MongooseCache = globalCache.mongooseCache || { conn: null, promise: null };
 
-if (!global.mongooseCache) {
-    global.mongooseCache = cached;
+if (!globalCache.mongooseCache) {
+    globalCache.mongooseCache = cached;
 }
 
 async function dbConnect() {
