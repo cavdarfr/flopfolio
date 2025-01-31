@@ -41,6 +41,34 @@ export const getUser = async () => {
     return serializedUser;
 };
 
+export const getUserBySlug = async (slug: string) => {
+    await dbConnect();
+
+    const user = await User.findOne({ slug }).lean();
+
+    if (!user) {
+        return null;
+    }
+
+    // Convertir l'objet en format JSON sérialisable
+    const serializedUser = JSON.parse(
+        JSON.stringify({
+            ...user,
+            _id: user._id.toString(),
+            socials: user.socials?.map((social) => ({
+                ...social,
+                _id: social._id?.toString(),
+            })),
+            business: user.business?.map((business) => ({
+                ...business,
+                _id: business._id?.toString(),
+            })),
+        })
+    );
+
+    return serializedUser;
+};
+
 // save user to database
 export async function saveUser(data: UserFormValues, clerkUserId: string) {
     await dbConnect();
@@ -55,12 +83,13 @@ export async function saveUser(data: UserFormValues, clerkUserId: string) {
                 url,
             })), // Select only necessary fields
             business: data.business?.map(
-                ({ _id, name, description, status, lessons }) => ({
+                ({ _id, name, description, status, lessons, logoUrl }) => ({
                     _id,
                     name,
                     description,
                     status,
                     lessons,
+                    logoUrl,
                 })
             ),
             clerkUserId,

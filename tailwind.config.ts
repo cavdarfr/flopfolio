@@ -43,6 +43,14 @@ const config = {
             },
         },
     },
+    safelist: [
+        "bg-green-500",
+        "bg-blue-500",
+        "bg-amber-500",
+        "bg-gray-500",
+        "bg-red-500",
+        "bg-yellow-500",
+    ],
     plugins: [require("tailwindcss-animate")],
 } satisfies Config;
 

@@ -93,6 +93,8 @@ export default function UserForm({ user }: { user: UserFormValues | null }) {
                 "https://api.dicebear.com/9.x/pixel-art/svg?seed=9",
         };
 
+        console.log(finalData.business, "finalData");
+
         const res = await saveUser(finalData, userId);
         if (res?.success) {
             toast({
@@ -247,7 +249,9 @@ export default function UserForm({ user }: { user: UserFormValues | null }) {
                                                 <FormControl>
                                                     <SelectSocial
                                                         value={field.value}
-                                                        onValueChange={field.onChange}
+                                                        onValueChange={
+                                                            field.onChange
+                                                        }
                                                     />
                                                 </FormControl>
                                                 <FormMessage />

@@ -5,10 +5,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { statusConfig, StatusType } from "@/lib/config/status";
 
 interface SelectStatusProps {
-    value: string;
-    onValueChange: (value: string) => void;
+    value: StatusType;
+    onValueChange: (value: StatusType) => void;
 }
 
 function StatusDot({ className }: { className: string }) {
@@ -26,6 +27,7 @@ function StatusDot({ className }: { className: string }) {
         </svg>
     );
 }
+
 export default function SelectStatus({
     value,
     onValueChange,
@@ -39,43 +41,14 @@ export default function SelectStatus({
                 <SelectValue placeholder="Select status" />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="active">
-                    <span className="flex items-center gap-2">
-                        <StatusDot className="text-emerald-600" />
-                        <span className="truncate">Active</span>
-                    </span>
-                </SelectItem>
-                <SelectItem value="inactive">
-                    <span className="flex items-center gap-2">
-                        <StatusDot className="text-blue-500" />
-                        <span className="truncate">Inactive</span>
-                    </span>
-                </SelectItem>
-                <SelectItem value="sold">
-                    <span className="flex items-center gap-2">
-                        <StatusDot className="text-amber-500" />
-                        <span className="truncate">Sold</span>
-                    </span>
-                </SelectItem>
-                <SelectItem value="cancelled">
-                    <span className="flex items-center gap-2">
-                        <StatusDot className="text-gray-500" />
-                        <span className="truncate">Cancelled</span>
-                    </span>
-                </SelectItem>
-                <SelectItem value="failed">
-                    <span className="flex items-center gap-2">
-                        <StatusDot className="text-red-500" />
-                        <span className="truncate">Failed</span>
-                    </span>
-                </SelectItem>
-                <SelectItem value="pending">
-                    <span className="flex items-center gap-2">
-                        {/* Changer la couleur qui correspond à pending */}
-                        <StatusDot className="text-yellow-800" />
-                        <span className="truncate">Pending</span>
-                    </span>
-                </SelectItem>
+                {Object.entries(statusConfig).map(([key, config]) => (
+                    <SelectItem key={key} value={key}>
+                        <span className="flex items-center gap-2">
+                            <StatusDot className={config.dotColor} />
+                            <span className="truncate">{config.label}</span>
+                        </span>
+                    </SelectItem>
+                ))}
             </SelectContent>
         </Select>
     );
