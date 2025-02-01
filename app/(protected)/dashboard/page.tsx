@@ -3,7 +3,6 @@ import UserForm from "@/components/UserForm";
 import { UserFormValues } from "@/lib/userValidation";
 export default async function DashboardPage() {
     const user = await getUser();
-    console.log("user", user);
 
     return (
         // <div className="flex flex-col items-center justify-center w-full max-w-screen-lg rounded-md p-4">

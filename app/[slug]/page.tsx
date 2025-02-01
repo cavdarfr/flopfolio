@@ -26,8 +26,6 @@ export default async function Page({
 }) {
     const slug = (await params).slug;
     const user = await getUserBySlug(slug);
-    console.log("user", user);
-    console.log("params", params);
     if (!user) {
         notFound();
     }
@@ -93,8 +91,32 @@ export default async function Page({
                                 key={business.name}
                                 className="rounded-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden"
                             >
-                                <div className="p-6 flex flex-col flex-1">
-                                    <div className="flex items-center">
+                                <div className="p-4 sm:p-6 flex flex-col flex-1">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex flex-col gap-2">
+                                            <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                                                {business.name}
+                                            </h3>
+                                            <Badge
+                                                variant="outline"
+                                                className="gap-1.5 w-fit"
+                                            >
+                                                <span
+                                                    className={cn(
+                                                        "size-2 rounded-full bg-amber-500",
+                                                        statusConfig[
+                                                            business.status as keyof typeof statusConfig
+                                                        ]?.color
+                                                    )}
+                                                    aria-hidden="true"
+                                                />
+                                                {
+                                                    statusConfig[
+                                                        business.status as keyof typeof statusConfig
+                                                    ]?.label
+                                                }
+                                            </Badge>
+                                        </div>
                                         {business.logoUrl && (
                                             <Image
                                                 src={business.logoUrl || ""}
@@ -106,37 +128,10 @@ export default async function Page({
                                                 }
                                             />
                                         )}
-
-                                        <div className="flex flex-col gap-2 flex-1">
-                                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                                <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
-                                                    {business.name}
-                                                </h3>
-                                                <Badge
-                                                    variant="outline"
-                                                    className="gap-1.5 w-fit"
-                                                >
-                                                    <span
-                                                        className={cn(
-                                                            "size-2 rounded-full bg-amber-500",
-                                                            statusConfig[
-                                                                business.status as keyof typeof statusConfig
-                                                            ]?.color
-                                                        )}
-                                                        aria-hidden="true"
-                                                    />
-                                                    {
-                                                        statusConfig[
-                                                            business.status as keyof typeof statusConfig
-                                                        ]?.label
-                                                    }
-                                                </Badge>
-                                            </div>
-                                            <p className="text-zinc-600 dark:text-zinc-300 mb-4">
-                                                {business.description}
-                                            </p>
-                                        </div>
                                     </div>
+                                    <p className="text-zinc-600 dark:text-zinc-300 my-4 ">
+                                        {business.description}
+                                    </p>
                                     <Separator className="mb-4" />
                                     <div>
                                         <div className="flex gap-3">
