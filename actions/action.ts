@@ -6,6 +6,8 @@ import User from "@/models/UserSchema"; // Assurez-vous d'avoir ce modèle
 
 import { UserFormValues } from "@/lib/userValidation";
 import { revalidatePath } from "next/cache";
+import FeedbackModel from "@/models/FeedbackSchema";
+import { FeedbackFormValues } from "@/lib/feedbackValidation";
 
 export const getUser = async () => {
     await dbConnect();
@@ -103,5 +105,18 @@ export async function saveUser(data: UserFormValues, clerkUserId: string) {
     } catch (error) {
         console.error("Failed to save user data:", error);
         return { error: "Failed to save user data" };
+    }
+}
+
+export async function submitFeedback(data: FeedbackFormValues) {
+    await dbConnect();
+
+    try {
+        await FeedbackModel.create(data);
+        revalidatePath("/feedback");
+        return { success: true };
+    } catch (error) {
+        console.error("Failed to submit feedback:", error);
+        return { error: "Failed to submit feedback" };
     }
 }
