@@ -23,11 +23,11 @@ export default function Footer() {
                             <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                                 Navigation
                             </p>
-                            <div className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-3">
                                 <Link href="/">
                                     <Button
                                         variant="link"
-                                        className="h-auto p-0"
+                                        className="px-4 py-2 w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                                     >
                                         Home
                                     </Button>
@@ -35,7 +35,7 @@ export default function Footer() {
                                 <Link href="/about">
                                     <Button
                                         variant="link"
-                                        className="h-auto p-0"
+                                        className="px-4 py-2 w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                                     >
                                         About
                                     </Button>
@@ -43,7 +43,7 @@ export default function Footer() {
                                 {/* <Link href="/contact">
                                     <Button
                                         variant="link"
-                                        className="h-auto p-0"
+                                         className="px-4 py-2 w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                                     >
                                         Contact
                                     </Button>
@@ -55,19 +55,23 @@ export default function Footer() {
                             <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                                 Legal
                             </p>
-                            <div className="flex flex-col gap-4">
-                                <Link href="/"> {/*Comming soon*/}
+                            <div className="flex flex-col gap-3">
+                                <Link href="/">
+                                    {" "}
+                                    {/*Comming soon*/}
                                     <Button
                                         variant="link"
-                                        className="h-auto p-0"
+                                        className="px-4 py-2 w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                                     >
                                         Privacy Policy
                                     </Button>
                                 </Link>
-                                <Link href="/"> {/*Comming soon*/}
+                                <Link href="/">
+                                    {" "}
+                                    {/*Comming soon*/}
                                     <Button
                                         variant="link"
-                                        className="h-auto p-0"
+                                        className="px-4 py-2 w-full text-left hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                                     >
                                         Terms of Service
                                     </Button>
@@ -90,6 +94,7 @@ export default function Footer() {
                             href="https://github.com"
                             target="_blank"
                             rel="noopener noreferrer"
+                            className="flex items-center gap-2"
                         >
                             <GitHubIcon className="w-6 h-6" /> Github
                         </Link>

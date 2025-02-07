@@ -20,7 +20,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+    metadataBase: new URL(
+        process.env.NEXT_PUBLIC_APP_URL || "https://flopfolio.vercel.app"
+    ),
     title: {
         default: "Flopfolio - Celebrate Your Failures, Empower Your Future",
         template: "%s | Flopfolio",
@@ -39,8 +41,8 @@ export const metadata: Metadata = {
     creator: "Flopfolio",
     icons: {
         icon: [
-            { url: '/favicon.ico', sizes: 'any' },
-            { url: '/icon?<generated>', type: 'image/png' }
+            { url: "/favicon.ico", sizes: "any" },
+            { url: "/icon?<generated>", type: "image/png" },
         ],
     },
     openGraph: {
@@ -51,7 +53,14 @@ export const metadata: Metadata = {
         description:
             "Showcase your entrepreneurial journey, celebrate your learnings, and grow from every setback.",
         siteName: "Flopfolio",
-        images: ["/logo.avif"],
+        images: [
+            {
+                url: "https://flopfolio.vercel.app/logo.avif", // Ensure this file is in the public directory
+                width: 1200,
+                height: 630,
+                alt: "Flopfolio Logo",
+            },
+        ],
     },
     twitter: {
         card: "summary_large_image",
@@ -59,7 +68,14 @@ export const metadata: Metadata = {
         description:
             "Showcase your entrepreneurial journey, celebrate your learnings, and grow from every setback.",
         creator: "@flopfolio",
-        images: ["/logo.avif"],
+        images: [
+            {
+                url: "https://flopfolio.vercel.app/logo.avif", // Ensure this file is in the public directory
+                width: 1200,
+                height: 630,
+                alt: "Flopfolio Logo",
+            },
+        ],
     },
     robots: {
         index: true,
