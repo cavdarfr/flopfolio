@@ -23,9 +23,9 @@ const socialIcons = {
 export default async function Page({
     params,
 }: {
-    params: Promise<{ slug: string }>;
+    params: { slug: string };
 }) {
-    const slug = (await params).slug;
+    const slug = params.slug;
     const user = await getUserBySlug(slug);
     if (!user) {
         notFound();
