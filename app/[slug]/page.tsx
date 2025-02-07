@@ -152,23 +152,31 @@ export default async function Page({
     );
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({
+    params,
+}: {
+    params: { slug: string };
+}): Promise<Metadata> {
     const user = await getUserBySlug(params.slug);
-    
+
     if (!user) {
         return {
             title: "User Not Found",
-            description: "The requested user profile could not be found."
+            description: "The requested user profile could not be found.",
         };
     }
 
     return {
         title: `${user.name}'s Portfolio`,
-        description: user.bio || `Check out ${user.name}'s entrepreneurial journey on Flopfolio`,
+        description:
+            user.bio ||
+            `Check out ${user.name}'s entrepreneurial journey on Flopfolio`,
         openGraph: {
             title: `${user.name}'s Portfolio | Flopfolio`,
-            description: user.bio || `Check out ${user.name}'s entrepreneurial journey on Flopfolio`,
-            images: [{ url: user.avatarUrl }]
-        }
+            description:
+                user.bio ||
+                `Check out ${user.name}'s entrepreneurial journey on Flopfolio`,
+            images: [{ url: user.avatarUrl }],
+        },
     };
 }
