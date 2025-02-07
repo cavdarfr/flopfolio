@@ -62,9 +62,9 @@ function BusinessCard({ business }: { business: Business }) {
             <div className="p-4 sm:p-6 flex flex-col flex-1 text-xs">
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col gap-2">
-                        <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                        <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
                             {business.name}
-                        </h3>
+                        </h2>
                         <Badge variant="outline" className="gap-1.5 w-fit">
                             <span
                                 className={cn(
@@ -82,7 +82,8 @@ function BusinessCard({ business }: { business: Business }) {
                             alt={business.name}
                             width={68}
                             height={68}
-                            className="border rounded-full w-12 h-12 mr-4"
+                            style={{ objectFit: "contain" }}
+                            className="border rounded-full w-[68px] h-[68px] mr-4"
                         />
                     )}
                 </div>

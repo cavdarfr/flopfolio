@@ -1,0 +1,16 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://flopfolio.com/sitemap.xml
+
+# Disallow admin/private routes
+Disallow: /dashboard
+Disallow: /api/*
+Disallow: /_next/*
+Disallow: /static/*
+
+# Allow public routes explicitly
+Allow: /about
+Allow: /feedback 

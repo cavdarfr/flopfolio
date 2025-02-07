@@ -60,7 +60,7 @@ function Case() {
                 api.scrollNext();
                 setCurrent(current + 1);
             }
-        }, 1000);
+        }, 3000);
     }, [api, current]);
 
     return (

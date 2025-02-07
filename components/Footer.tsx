@@ -5,7 +5,7 @@ import GitHubIcon from "./icons/GitHubIcon";
 
 export default function Footer() {
     return (
-        <footer className="mt-28">
+        <footer className="mt-20">
             <div className="mx-auto max-w-7xl px-6 pt-12 pb-2 md:flex md:items-center md:justify-between lg:px-8">
                 <div className="flex flex-col gap-6">
                     <div className="flex items-center gap-2">
@@ -23,7 +23,7 @@ export default function Footer() {
                             <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                                 Navigation
                             </p>
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-4">
                                 <Link href="/">
                                     <Button
                                         variant="link"
@@ -55,7 +55,7 @@ export default function Footer() {
                             <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                                 Legal
                             </p>
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-4">
                                 <Link href="/"> {/*Comming soon*/}
                                     <Button
                                         variant="link"
@@ -91,7 +91,7 @@ export default function Footer() {
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            <GitHubIcon className="w-6 h-6" />
+                            <GitHubIcon className="w-6 h-6" /> Github
                         </Link>
                     </div>
                 </div>

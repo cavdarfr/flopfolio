@@ -27,6 +27,7 @@ export default function Header() {
                         alt="Flopfolio Logo"
                         width={34}
                         height={34}
+                        priority
                     />
                     <span className="text-2xl font-bold">Flopfolio</span>
                 </Link>
@@ -36,7 +37,11 @@ export default function Header() {
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                 <SheetTrigger asChild className="md:hidden">
                     {/* Hidden on medium screens and up */}
-                    <Button variant="outline" size="icon">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        aria-label="Open navigation menu"
+                    >
                         <Menu className="h-5 w-5" />
                     </Button>
                 </SheetTrigger>
