@@ -20,42 +20,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    metadataBase: new URL(
-        process.env.NEXT_PUBLIC_APP_URL || "https://flopfolio.vercel.app"
-    ),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://flopfolio.vercel.app'),
     title: {
         default: "Flopfolio - Celebrate Your Failures, Empower Your Future",
         template: "%s | Flopfolio",
     },
-    description:
-        "Showcase your entrepreneurial journey, celebrate your learnings, and grow from every setback. Document your ventures and share invaluable lessons.",
-    keywords: [
-        "entrepreneurship",
-        "startup",
-        "business",
-        "failure",
-        "learning",
-        "portfolio",
-    ],
+    description: "Showcase your entrepreneurial journey, celebrate your learnings, and grow from every setback.",
+    keywords: ["entrepreneurship", "startup", "business", "failure", "learning", "portfolio"],
     authors: [{ name: "Flopfolio" }],
     creator: "Flopfolio",
     icons: {
         icon: [
             { url: "/favicon.ico", sizes: "any" },
-            { url: "/icon?<generated>", type: "image/png" },
+            { url: "/icon?<generated>", type: "image/png" }
         ],
     },
     openGraph: {
         type: "website",
         locale: "en_US",
-        url: "https://flopfolio.com",
+        url: "https://flopfolio.vercel.app",
         title: "Flopfolio - Celebrate Your Failures, Empower Your Future",
-        description:
-            "Showcase your entrepreneurial journey, celebrate your learnings, and grow from every setback.",
+        description: "Showcase your entrepreneurial journey, celebrate your learnings, and grow from every setback.",
         siteName: "Flopfolio",
         images: [
             {
-                url: "https://flopfolio.vercel.app/logo.avif", // Ensure this file is in the public directory
+                url: "https://flopfolio.vercel.app/logo.avif",
                 width: 1200,
                 height: 630,
                 alt: "Flopfolio Logo",
@@ -65,12 +54,11 @@ export const metadata: Metadata = {
     twitter: {
         card: "summary_large_image",
         title: "Flopfolio - Celebrate Your Failures, Empower Your Future",
-        description:
-            "Showcase your entrepreneurial journey, celebrate your learnings, and grow from every setback.",
+        description: "Showcase your entrepreneurial journey, celebrate your learnings, and grow from every setback.",
         creator: "@flopfolio",
         images: [
             {
-                url: "https://flopfolio.vercel.app/logo.avif", // Ensure this file is in the public directory
+                url: "https://flopfolio.vercel.app/logo.avif",
                 width: 1200,
                 height: 630,
                 alt: "Flopfolio Logo",
