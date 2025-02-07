@@ -20,12 +20,11 @@ const socialIcons = {
     twitter: XTwitterIcon,
 };
 
-export default async function Page({
-    params,
-}: {
-    params: { slug: string };
-}) {
-    const slug = params.slug;
+type Params = Promise<{ slug: string }>;
+
+export default async function Page({ params }: { params: Params }) {
+    const { slug } = await params;
+
     const user = await getUserBySlug(slug);
     if (!user) {
         notFound();
@@ -155,9 +154,11 @@ export default async function Page({
 export async function generateMetadata({
     params,
 }: {
-    params: { slug: string };
+    params: Params;
 }): Promise<Metadata> {
-    const user = await getUserBySlug(params.slug);
+    const { slug } = await params;
+
+    const user = await getUserBySlug(slug);
 
     if (!user) {
         return {
