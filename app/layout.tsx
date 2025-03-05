@@ -11,12 +11,16 @@ const geistSans = Geist({
     variable: "--font-geist-sans",
     subsets: ["latin"],
     display: "swap",
+    preload: true,
+    fallback: ["system-ui", "sans-serif"],
 });
 
 const geistMono = Geist_Mono({
     variable: "--font-geist-mono",
     subsets: ["latin"],
     display: "swap",
+    preload: true,
+    fallback: ["monospace"],
 });
 
 export const metadata: Metadata = {
@@ -34,10 +38,23 @@ export const metadata: Metadata = {
         locale: "en_US",
         url: "https://flopfolio.vercel.app",
         siteName: "Flopfolio",
+        title: "Flopfolio - Celebrate Your Failures, Empower Your Future",
+        description: "Showcase your entrepreneurial journey, celebrate your learnings, and grow from every setback.",
+        images: [
+            {
+                url: "/og-image.jpg",
+                width: 1200,
+                height: 630,
+                alt: "Flopfolio - Celebrate Your Failures, Empower Your Future",
+            },
+        ],
     },
     twitter: {
         card: "summary_large_image",
         creator: "@flopfolio",
+        title: "Flopfolio - Celebrate Your Failures, Empower Your Future",
+        description: "Showcase your entrepreneurial journey, celebrate your learnings, and grow from every setback.",
+        images: ["/twitter-image.jpg"],
     },
     robots: {
         index: true,
@@ -53,6 +70,11 @@ export default function RootLayout({
     return (
         <ClerkProvider>
             <html lang="en" data-theme="light">
+                <head>
+                    <link rel="preconnect" href="https://fonts.googleapis.com" />
+                    <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+                    <link rel="preload" as="image" href="/logo.avif" />
+                </head>
                 <body
                     className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100`}
                 >
