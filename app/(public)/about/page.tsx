@@ -14,9 +14,10 @@ export default function AboutPage() {
                         About Flopfolio
                     </h1>
                     <p className="text-zinc-600 dark:text-zinc-300 md:w-4/5 mx-auto">
-                        We believe that every failure is a stepping stone to success. 
-                        Flopfolio was created to help entrepreneurs document their journey, 
-                        learn from their experiences, and share their stories with others.
+                        We believe that every failure is a stepping stone to
+                        success. Flopfolio was created to help entrepreneurs
+                        document their journey, learn from their experiences,
+                        and share their stories with others.
                     </p>
                 </div>
             </section>
@@ -30,10 +31,12 @@ export default function AboutPage() {
                                 <div className="p-3 bg-zinc-100 rounded-full">
                                     <Heart className="w-6 h-6 text-red-500" />
                                 </div>
-                                <h3 className="text-xl font-semibold">Built with Purpose</h3>
+                                <h3 className="text-xl font-semibold">
+                                    Built with Purpose
+                                </h3>
                                 <p className="text-zinc-600 dark:text-zinc-300">
-                                    Created to help entrepreneurs embrace and learn from 
-                                    their challenges and setbacks.
+                                    Created to help entrepreneurs embrace and
+                                    learn from their challenges and setbacks.
                                 </p>
                             </div>
                         </CardContent>
@@ -45,10 +48,13 @@ export default function AboutPage() {
                                 <div className="p-3 bg-zinc-100 rounded-full">
                                     <Users className="w-6 h-6 text-blue-500" />
                                 </div>
-                                <h3 className="text-xl font-semibold">Community Driven</h3>
+                                <h3 className="text-xl font-semibold">
+                                    Community Driven
+                                </h3>
                                 <p className="text-zinc-600 dark:text-zinc-300">
-                                    A platform where entrepreneurs can connect, share experiences,
-                                    and learn from each other.
+                                    A platform where entrepreneurs can connect,
+                                    share experiences, and learn from each
+                                    other.
                                 </p>
                             </div>
                         </CardContent>
@@ -60,10 +66,12 @@ export default function AboutPage() {
                                 <div className="p-3 bg-zinc-100 rounded-full">
                                     <Sparkles className="w-6 h-6 text-green-500" />
                                 </div>
-                                <h3 className="text-xl font-semibold">Continuous Growth</h3>
+                                <h3 className="text-xl font-semibold">
+                                    Continuous Growth
+                                </h3>
                                 <p className="text-zinc-600 dark:text-zinc-300">
-                                    We&apos;re constantly evolving and improving based on
-                                    user feedback and needs.
+                                    We&apos;re constantly evolving and improving
+                                    based on user feedback and needs.
                                 </p>
                             </div>
                         </CardContent>
@@ -78,15 +86,20 @@ export default function AboutPage() {
                         Ready to Share Your Journey?
                     </h2>
                     <p className="text-zinc-600 dark:text-zinc-300 mb-8">
-                        Join our community of entrepreneurs and start documenting your journey today.
+                        Join our community of entrepreneurs and start
+                        documenting your journey today.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button className="rounded-full text-xl h-12" size="lg" asChild>
-                            <Link href="/sign-up">Get Started</Link>
+                        <Button
+                            className="rounded-full text-xl h-12"
+                            size="lg"
+                            asChild
+                        >
+                            <Link href="/dashboard">Get Started</Link>
                         </Button>
-                        <Button 
-                            variant="outline" 
-                            className="rounded-full text-xl h-12" 
+                        <Button
+                            variant="outline"
+                            className="rounded-full text-xl h-12"
                             size="lg"
                             asChild
                         >
@@ -100,10 +113,12 @@ export default function AboutPage() {
 }
 
 export const metadata: Metadata = {
-  title: "About Us",
-  description: "Learn about Flopfolio's mission to help entrepreneurs document their journey and learn from their experiences.",
-  openGraph: {
-    title: "About Flopfolio - Our Mission and Values",
-    description: "Learn about Flopfolio's mission to help entrepreneurs document their journey and learn from their experiences."
-  }
-}; 
+    title: "About Us",
+    description:
+        "Learn about Flopfolio's mission to help entrepreneurs document their journey and learn from their experiences.",
+    openGraph: {
+        title: "About Flopfolio - Our Mission and Values",
+        description:
+            "Learn about Flopfolio's mission to help entrepreneurs document their journey and learn from their experiences.",
+    },
+};

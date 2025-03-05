@@ -7,10 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { LightbulbIcon, UserRoundIcon, UsersRoundIcon } from "lucide-react";
-import { Case } from "@/components/ui/cases-with-infinite-scroll";
+// import { Case } from "@/components/ui/cases-with-infinite-scroll";
 
 // Import Lucide Icons
-import { Check, BarChart, Brain, BookOpen } from "lucide-react";
+import { Check } from "lucide-react";
 
 // Dummy status configuration for business cards.
 const statusConfig = {
@@ -124,12 +124,14 @@ export default function LandingPage() {
                             lessons behind them.
                         </p>
                     </div>
-                    <Button
-                        className="rounded-full w-fit text-xl h-12"
-                        size={"lg"}
-                    >
-                        Get Started
-                    </Button>
+                    <Link href="/dashboard">
+                        <Button
+                            className="rounded-full w-fit text-xl h-12"
+                            size={"lg"}
+                        >
+                            Get Started
+                        </Button>
+                    </Link>
                 </div>
                 {/* Right Column */}
                 <div className="grid grid-cols-1 gap-4 rounded-2xl md:px-8">
@@ -195,7 +197,7 @@ export default function LandingPage() {
             </section>
 
             {/* Testimonials Section */}
-            <Case />
+            {/* <Case /> */}
 
             {/* Pricing Section: Redesigned with disabled Growth and Pro buttons for MVP */}
             <section className="mt-32 px-5 md:px-16 py-20 flex flex-col gap-12 min-h-min">
@@ -247,38 +249,27 @@ export default function LandingPage() {
                                 <s>Custom Domain Support</s>{" "}
                                 <Badge variant="outline">Soon</Badge>
                             </li>
-                            <li className="flex items-center gap-2 text-zinc-500 line-through dark:text-zinc-400">
-                                <Check
-                                    className="h-5 w-5 text-zinc-500 dark:text-zinc-400"
-                                    aria-hidden="true"
-                                />
-                                <s>Basic Analytics</s>{" "}
-                                <Badge variant="outline">Future</Badge>
-                            </li>
                         </ul>
-                        <Button
-                            className="rounded-full w-full text-xl h-12"
-                            size={"lg"}
-                        >
-                            Get Started
-                        </Button>
+                        <Link href="/dashboard" className="mt-auto">
+                            <Button className="w-full rounded-full">
+                                Get Started
+                            </Button>
+                        </Link>
                     </div>
 
-                    {/* Growth Plan Card - Disabled Button */}
-                    <div className="bg-white p-8 rounded-2xl shadow-lg flex flex-col">
+                    {/* Growth Plan Card - Disabled for MVP */}
+                    <div className="bg-white p-8 rounded-2xl shadow-lg flex flex-col opacity-60">
                         <div className="text-center mb-6">
                             <h3 className="text-3xl font-semibold mb-2">
                                 Growth
                             </h3>
                             <p className="text-zinc-600 dark:text-zinc-300">
-                                For growing entrepreneurs and small teams
+                                For serious entrepreneurs
                             </p>
-                            <p className="text-4xl font-bold mt-4 flex flex-col ">
-                                $19
-                                <span className="text-sm font-normal text-zinc-500 dark:text-zinc-400">
-                                    One time payment
-                                </span>
-                            </p>
+                            <p className="text-4xl font-bold mt-4">$9</p>
+                            <Badge variant="outline" className="mt-2">
+                                Coming Soon
+                            </Badge>
                         </div>
                         <ul className="mb-8 space-y-3 flex-grow">
                             <li className="flex items-center gap-2">
@@ -286,7 +277,7 @@ export default function LandingPage() {
                                     className="h-5 w-5 text-green-500"
                                     aria-hidden="true"
                                 />
-                                All Free MVP Features
+                                All Free Features
                             </li>
                             <li className="flex items-center gap-2">
                                 <Check
@@ -296,45 +287,32 @@ export default function LandingPage() {
                                 Custom Domain Support
                             </li>
                             <li className="flex items-center gap-2">
-                                <BarChart
+                                <Check
                                     className="h-5 w-5 text-green-500"
                                     aria-hidden="true"
                                 />
-                                Basic Analytics
-                            </li>
-                            <li className="flex items-center gap-2 text-zinc-500 line-through dark:text-zinc-400">
-                                <Check
-                                    className="h-5 w-5 text-zinc-500 dark:text-zinc-400"
-                                    aria-hidden="true"
-                                />
-                                <s>AI-Powered Insights</s>{" "}
-                                <Badge variant="outline">Future</Badge>
+                                Advanced Analytics
                             </li>
                         </ul>
                         <Button
-                            className="rounded-full w-full text-xl h-12 text-zinc-400 bg-zinc-200 hover:bg-zinc-200 cursor-not-allowed"
-                            size={"lg"}
+                            className="w-full rounded-full"
+                            variant="outline"
                             disabled
                         >
                             Coming Soon
                         </Button>
                     </div>
 
-                    {/* Pro Plan Card - Disabled Button */}
-                    <div className="bg-white p-8 rounded-2xl shadow-lg flex flex-col">
+                    {/* Pro Plan Card - Disabled for MVP */}
+                    <div className="bg-white p-8 rounded-2xl shadow-lg flex flex-col opacity-60">
                         <div className="text-center mb-6">
                             <h3 className="text-3xl font-semibold mb-2">Pro</h3>
                             <p className="text-zinc-600 dark:text-zinc-300">
-                                For established businesses and agencies
+                                For professional entrepreneurs
                             </p>
-                            <p className="text-4xl font-bold mt-4 flex flex-col ">
-                                $49
-                                <span className="text-sm font-normal text-zinc-500 dark:text-zinc-400">
-                                    One time payment
-                                </span>
-                            </p>
-                            <Badge variant="default" className="mt-2">
-                                Most Popular
+                            <p className="text-4xl font-bold mt-4">$29</p>
+                            <Badge variant="outline" className="mt-2">
+                                Coming Soon
                             </Badge>
                         </div>
                         <ul className="mb-8 space-y-3 flex-grow">
@@ -346,55 +324,110 @@ export default function LandingPage() {
                                 All Growth Features
                             </li>
                             <li className="flex items-center gap-2">
-                                <BarChart
+                                <Check
                                     className="h-5 w-5 text-green-500"
                                     aria-hidden="true"
                                 />
-                                Advanced Analytics Dashboard{" "}
+                                Priority Support
                             </li>
                             <li className="flex items-center gap-2">
-                                <Brain
+                                <Check
                                     className="h-5 w-5 text-green-500"
                                     aria-hidden="true"
                                 />
-                                AI-Powered Insights
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <BookOpen
-                                    className="h-5 w-5 text-green-500"
-                                    aria-hidden="true"
-                                />
-                                Learning Resources Access
+                                API Access
                             </li>
                         </ul>
                         <Button
-                            className="rounded-full w-full text-xl h-12 text-zinc-400 bg-zinc-200 hover:bg-zinc-200 cursor-not-allowed"
-                            size={"lg"}
+                            className="w-full rounded-full"
+                            variant="outline"
                             disabled
                         >
                             Coming Soon
                         </Button>
                     </div>
                 </div>
-                <p className="text-center mt-8 text-sm text-zinc-600 dark:text-zinc-300">
-                    * This is an MVP. More features and premium options will be
-                    added based on your feedback.
-                </p>
             </section>
 
-            {/* Feedback Section */}
+            {/* FAQ Section */}
             <section className="mt-32 px-5 md:px-16 py-20 flex flex-col gap-12 min-h-min">
-                <h2 className="text-2xl md:text-4xl lg:text-5xl tracking-tighter lg:max-w-xl font-regular text-center mx-auto">
-                    We Value Your Feedback
-                </h2>
-                <p className="text-center text-zinc-600 dark:text-zinc-300">
-                    Your input helps us improve Flopfolio. Share your thoughts
-                    or suggestions with us.
-                </p>
+                <div className="text-center">
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl tracking-tighter lg:max-w-xl font-regular text-center mx-auto">
+                        Frequently Asked Questions
+                    </h2>
+                    <p className="text-zinc-600 dark:text-zinc-300 mt-4 md:w-2/3 mx-auto">
+                        Have questions? We&apos;ve got answers.
+                    </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    {/* FAQ Item 1 */}
+                    <div className="bg-white p-8 rounded-2xl shadow-lg">
+                        <h3 className="text-xl font-semibold mb-4">
+                            What is Flopfolio?
+                        </h3>
+                        <p className="text-zinc-600 dark:text-zinc-300">
+                            Flopfolio is a platform that helps entrepreneurs
+                            showcase their journey, including both successes and
+                            failures, to help others learn from their
+                            experiences.
+                        </p>
+                    </div>
+
+                    {/* FAQ Item 2 */}
+                    <div className="bg-white p-8 rounded-2xl shadow-lg">
+                        <h3 className="text-xl font-semibold mb-4">
+                            Is Flopfolio free to use?
+                        </h3>
+                        <p className="text-zinc-600 dark:text-zinc-300">
+                            Yes, Flopfolio is currently free to use as we are in
+                            the MVP stage. We plan to introduce paid plans with
+                            additional features in the future.
+                        </p>
+                    </div>
+
+                    {/* FAQ Item 3 */}
+                    <div className="bg-white p-8 rounded-2xl shadow-lg">
+                        <h3 className="text-xl font-semibold mb-4">
+                            How do I get started?
+                        </h3>
+                        <p className="text-zinc-600 dark:text-zinc-300">
+                            Simply sign up for an account, create your profile,
+                            and start adding your projects. You can then share
+                            your Flopfolio link with others.
+                        </p>
+                    </div>
+
+                    {/* FAQ Item 4 */}
+                    <div className="bg-white p-8 rounded-2xl shadow-lg">
+                        <h3 className="text-xl font-semibold mb-4">
+                            Can I use a custom domain?
+                        </h3>
+                        <p className="text-zinc-600 dark:text-zinc-300">
+                            Custom domain support is coming soon as part of our
+                            paid plans. Stay tuned for updates!
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className="mt-32 px-5 md:px-16 py-20 flex flex-col gap-8 min-h-min bg-white rounded-2xl shadow-lg">
+                <div className="text-center">
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl tracking-tighter lg:max-w-xl font-regular text-center mx-auto">
+                        Ready to showcase your journey?
+                    </h2>
+                    <p className="text-zinc-600 dark:text-zinc-300 mt-4 md:w-2/3 mx-auto">
+                        Join Flopfolio today and start sharing your
+                        entrepreneurial story with the world.
+                    </p>
+                </div>
                 <div className="flex justify-center">
-                    <Link href="/feedback">
-                        <Button className="rounded-full text-xl h-12" size="lg">
-                            Give Feedback
+                    <Link href="/dashboard">
+                        <Button
+                            className="rounded-full text-xl h-12"
+                            size={"lg"}
+                        >
+                            Get Started
                         </Button>
                     </Link>
                 </div>

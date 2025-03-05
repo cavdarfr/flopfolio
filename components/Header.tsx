@@ -13,7 +13,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
-
 export default function Header() {
     const user = useUser();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -28,6 +27,7 @@ export default function Header() {
                         width={34}
                         height={34}
                         priority
+                        className="rounded-md"
                     />
                     <span className="text-2xl font-bold">Flopfolio</span>
                 </Link>
@@ -56,19 +56,23 @@ export default function Header() {
                         <Link href="/about">About</Link>
                         {/* <Link href="/contact">Contact</Link> */}
                         {user ? (
-                            <Button
-                                variant="default"
-                                className="rounded-full w-full text-xl h-12"
-                            >
-                                Dashboard
-                            </Button>
+                            <Link href="/dashboard">
+                                <Button
+                                    variant="default"
+                                    className="rounded-full w-full text-xl h-12"
+                                >
+                                    Dashboard
+                                </Button>
+                            </Link>
                         ) : (
-                            <Button
-                                variant="default"
-                                className="rounded-full w-full text-xl h-12"
-                            >
-                                Get Started
-                            </Button>
+                            <Link href="/sign-up">
+                                <Button
+                                    variant="default"
+                                    className="rounded-full w-full text-xl h-12"
+                                >
+                                    Get Started
+                                </Button>
+                            </Link>
                         )}
                     </nav>
                 </SheetContent>
@@ -86,19 +90,24 @@ export default function Header() {
                         About
                     </Button>
                 </Link>
-                {/* <Link href="/contact">
-                    <Button variant={"link"} className="text-xl px-0">
-                        Contact
-                    </Button>
-                </Link> */}
                 {user ? (
-                    <Button className="rounded-full text-xl h-12" size={"lg"}>
-                        Dashboard
-                    </Button>
+                    <Link href="/dashboard">
+                        <Button
+                            className="rounded-full text-xl h-12"
+                            size={"lg"}
+                        >
+                            Dashboard
+                        </Button>
+                    </Link>
                 ) : (
-                    <Button className="rounded-full text-xl h-12" size={"lg"}>
-                        Get Started
-                    </Button>
+                    <Link href="/sign-up">
+                        <Button
+                            className="rounded-full text-xl h-12"
+                            size={"lg"}
+                        >
+                            Get Started
+                        </Button>
+                    </Link>
                 )}
             </nav>
         </header>

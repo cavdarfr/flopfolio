@@ -27,7 +27,7 @@ export default function Icon() {
         <img
           src={`${
             process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-          }/logo.png`}
+          }/logoF.png`}
           alt="Flopfolio"
           width={32}
           height={32}
