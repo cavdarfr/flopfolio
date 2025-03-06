@@ -6,6 +6,7 @@ import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
 import { Toaster } from "@/components/ui/toaster";
+import Script from "next/script";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -74,6 +75,19 @@ export default function RootLayout({
                     <link rel="preconnect" href="https://fonts.googleapis.com" />
                     <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                     <link rel="preload" as="image" href="/logo.avif" />
+                    {/* Google Analytics */}
+                    <Script
+                        src="https://www.googletagmanager.com/gtag/js?id=G-E51RFRPFP6"
+                        strategy="afterInteractive"
+                    />
+                    <Script id="google-analytics" strategy="afterInteractive">
+                        {`
+                            window.dataLayer = window.dataLayer || [];
+                            function gtag(){dataLayer.push(arguments);}
+                            gtag('js', new Date());
+                            gtag('config', 'G-E51RFRPFP6');
+                        `}
+                    </Script>
                 </head>
                 <body
                     className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100`}
