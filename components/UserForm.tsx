@@ -22,7 +22,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UploadButton } from "@/lib/uploadthing";
 import Image from "next/image";
 import SelectStatus from "./SelectStatus";
@@ -34,8 +34,9 @@ export default function UserForm({ user }: { user: UserFormValues | null }) {
     const { toast } = useToast();
     const { userId } = useAuth();
 
-    const [avatarUrl, setAvatarUrl] = useState<string | null>(
-        "https://api.dicebear.com/9.x/pixel-art/svg?seed=3"
+    // Initialize avatarUrl state with user's avatar if available, or default
+    const [avatarUrl, setAvatarUrl] = useState<string>(
+        user?.avatarUrl || "https://api.dicebear.com/9.x/pixel-art/svg?seed=3"
     );
 
     const form = useForm<UserFormValues>({
@@ -44,13 +45,16 @@ export default function UserForm({ user }: { user: UserFormValues | null }) {
             name: user?.name || "",
             slug: user?.slug || "",
             bio: user?.bio || "",
-            avatarUrl:
-                user?.avatarUrl ||
-                "https://api.dicebear.com/9.x/pixel-art/svg?seed=9",
+            avatarUrl: avatarUrl, // Use the state value
             socials: user?.socials || [],
             business: user?.business || [],
         },
     });
+
+    // Update form value when avatarUrl state changes
+    useEffect(() => {
+        form.setValue("avatarUrl", avatarUrl);
+    }, [avatarUrl, form]);
 
     const {
         fields: socialsFields,
@@ -86,28 +90,47 @@ export default function UserForm({ user }: { user: UserFormValues | null }) {
             return;
         }
 
-        const finalData = {
-            ...data,
-            avatarUrl:
-                data.avatarUrl ??
-                "https://api.dicebear.com/9.x/pixel-art/svg?seed=9",
-        };
+        try {
+            // No need to manually set avatarUrl here, it's already in the form data
+            const finalData = data;
 
-        console.log(finalData.business, "finalData");
+            const res = await saveUser(finalData, userId);
 
-        const res = await saveUser(finalData, userId);
-        if (res?.success) {
+            if (res?.success) {
+                toast({
+                    title: "Success",
+                    description: "User data has been saved successfully",
+                    variant: "success",
+                });
+            } else {
+                // Display error with location for easier debugging
+                const errorLocation = res?.errorLocation
+                    ? ` (in ${res.errorLocation})`
+                    : "";
+
+                toast({
+                    title: "Error Saving Data",
+                    description: `${
+                        res?.error || "Unknown error"
+                    }${errorLocation}`,
+                    variant: "destructive",
+                });
+
+                // Log for debugging
+                console.error("Error saving user:", {
+                    message: res?.error,
+                    location: res?.errorLocation,
+                });
+            }
+        } catch (error) {
+            console.error("Form submission error:", error);
             toast({
-                title: "User data saved",
-                variant: "success",
-                description: "User data has been saved successfully",
+                title: "Submission Error",
+                description: "An unexpected error occurred. Please try again.",
+                variant: "destructive",
             });
-        } else {
-            console.error("Error saving user:", res?.error);
         }
     };
-
-    console.log(form.formState.errors, "errors");
 
     return (
         <Form {...form}>

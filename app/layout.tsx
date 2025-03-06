@@ -74,7 +74,7 @@ export default function RootLayout({
                 <head>
                     <link rel="preconnect" href="https://fonts.googleapis.com" />
                     <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                    <link rel="preload" as="image" href="/logo.avif" />
+                    {/* <link rel="preload" as="image" href="/logo.avif" /> */}
                     {/* Google Analytics */}
                     <Script
                         src="https://www.googletagmanager.com/gtag/js?id=G-E51RFRPFP6"

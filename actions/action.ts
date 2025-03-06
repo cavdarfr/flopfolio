@@ -3,120 +3,190 @@
 import dbConnect from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import User from "@/models/UserSchema"; // Assurez-vous d'avoir ce modèle
-
 import { UserFormValues } from "@/lib/userValidation";
 import { revalidatePath } from "next/cache";
 import FeedbackModel from "@/models/FeedbackSchema";
 import { FeedbackFormValues } from "@/lib/feedbackValidation";
+import { 
+    ActionResponse, 
+    createSuccessResponse, 
+    createErrorResponse
+} from "@/lib/error-utils";
 
-export const getUser = async () => {
-    await dbConnect();
-    const { userId } = await auth();
+export const getUser = async (): Promise<ActionResponse> => {
+    try {
+        await dbConnect();
+        const { userId } = await auth();
 
-    if (!userId) {
-        console.log("User not found");
-        return null; // ✅ Empêche les erreurs si l'utilisateur n'est pas authentifié
+        if (!userId) {
+            return { 
+                success: false, 
+                error: "User not authenticated",
+                errorLocation: "getUser/auth" 
+            };
+        }
+
+        // Use lean() to get a plain JavaScript object instead of a Mongoose document
+        const user = await User.findOne({ clerkUserId: userId }).lean();
+
+        if (!user) {
+            return { 
+                success: false, 
+                error: "User profile not found",
+                errorLocation: "getUser/database" 
+            };
+        }
+
+        // Serialize the user object to ensure it's a plain object
+        const serializedUser = JSON.parse(
+            JSON.stringify({
+                ...user,
+                _id: user._id.toString(),
+                socials: user.socials?.map((social) => ({
+                    ...social,
+                    _id: social._id?.toString(),
+                })),
+                business: user.business?.map((business) => ({
+                    ...business,
+                    _id: business._id?.toString(),
+                })),
+            })
+        );
+
+        return createSuccessResponse(serializedUser);
+    } catch (error) {
+        return createErrorResponse(error, "getUser");
     }
-
-    const user = await User.findOne({ clerkUserId: userId }).lean();
-
-    if (!user) {
-        return null;
-    }
-
-    // Convertir l'objet en format JSON sérialisable
-    const serializedUser = JSON.parse(
-        JSON.stringify({
-            ...user,
-            _id: user._id.toString(),
-            socials: user.socials?.map((social) => ({
-                ...social,
-                _id: social._id?.toString(),
-            })),
-            business: user.business?.map((business) => ({
-                ...business,
-                _id: business._id?.toString(),
-            })),
-        })
-    );
-
-    return serializedUser;
 };
 
-export const getUserBySlug = async (slug: string) => {
-    await dbConnect();
+export const getUserBySlug = async (slug: string): Promise<ActionResponse> => {
+    try {
+        await dbConnect();
 
-    const user = await User.findOne({ slug }).lean();
+        if (!slug) {
+            return {
+                success: false,
+                error: "Slug parameter is required",
+                errorLocation: "getUserBySlug/params"
+            };
+        }
 
-    if (!user) {
-        return null;
+        // Use lean() to get a plain JavaScript object instead of a Mongoose document
+        const user = await User.findOne({ slug }).lean();
+
+        if (!user) {
+            return {
+                success: false,
+                error: "User not found",
+                errorLocation: "getUserBySlug/database"
+            };
+        }
+
+        // Serialize the user object to ensure it's a plain object
+        const serializedUser = JSON.parse(
+            JSON.stringify({
+                ...user,
+                _id: user._id.toString(),
+                socials: user.socials?.map((social) => ({
+                    ...social,
+                    _id: social._id?.toString(),
+                })),
+                business: user.business?.map((business) => ({
+                    ...business,
+                    _id: business._id?.toString(),
+                })),
+            })
+        );
+
+        return createSuccessResponse(serializedUser);
+    } catch (error) {
+        return createErrorResponse(error, "getUserBySlug");
     }
-
-    // Convertir l'objet en format JSON sérialisable
-    const serializedUser = JSON.parse(
-        JSON.stringify({
-            ...user,
-            _id: user._id.toString(),
-            socials: user.socials?.map((social) => ({
-                ...social,
-                _id: social._id?.toString(),
-            })),
-            business: user.business?.map((business) => ({
-                ...business,
-                _id: business._id?.toString(),
-            })),
-        })
-    );
-
-    return serializedUser;
 };
 
 // save user to database
-export async function saveUser(data: UserFormValues, clerkUserId: string) {
-    await dbConnect();
+export async function saveUser(data: UserFormValues, clerkUserId: string): Promise<ActionResponse> {
+    // Check for user authentication
+    if (!clerkUserId) {
+        return { 
+            success: false, 
+            error: "User ID is missing",
+            errorLocation: "Authentication Check" 
+        };
+    }
 
     try {
-        // Clean the data to avoid circular references
+        // Connect to database
+        await dbConnect();
+        
+        // Check if slug is already taken by another user
+        const existingUserWithSlug = await User.findOne({ 
+            slug: data.slug, 
+            clerkUserId: { $ne: clerkUserId } 
+        });
+        
+        if (existingUserWithSlug) {
+            return { 
+                success: false, 
+                error: `Slug "${data.slug}" is already taken`,
+                errorLocation: "Slug Validation" 
+            };
+        }
+
+        // Prepare data for saving
         const cleanedData = {
             ...data,
             socials: data.socials?.map(({ _id, name, url }) => ({
-                _id,
-                name,
-                url,
-            })), // Select only necessary fields
+                _id, name, url,
+            })),
             business: data.business?.map(
                 ({ _id, name, description, status, lessons, logoUrl }) => ({
-                    _id,
-                    name,
-                    description,
-                    status,
-                    lessons,
-                    logoUrl,
+                    _id, name, description, status, lessons, logoUrl,
                 })
             ),
             clerkUserId,
         };
-        await User.findOneAndUpdate({ clerkUserId }, cleanedData, {
-            upsert: true,
-            new: true,
-        });
+
+        // Save to database
+        const result = await User.findOneAndUpdate(
+            { clerkUserId }, 
+            cleanedData, 
+            { upsert: true, new: true, lean: true } // Use lean() to get a plain JavaScript object
+        );
+        
+        // Properly serialize the result to avoid Mongoose document issues
+        const serializedResult = JSON.parse(JSON.stringify(result));
+        
         revalidatePath("/dashboard");
-        return { success: true };
+        return createSuccessResponse(serializedResult);
     } catch (error) {
-        console.error("Failed to save user data:", error);
-        return { error: "Failed to save user data" };
+        // Simple error handling with location information
+        return createErrorResponse(error, "saveUser");
     }
 }
 
-export async function submitFeedback(data: FeedbackFormValues) {
-    await dbConnect();
-
+export async function submitFeedback(data: FeedbackFormValues): Promise<ActionResponse> {
     try {
-        await FeedbackModel.create(data);
+        await dbConnect();
+        
+        if (!data) {
+            return {
+                success: false,
+                error: "Feedback data is required",
+                errorLocation: "submitFeedback/params"
+            };
+        }
+        
+        // Create the feedback and use lean() to get a plain JavaScript object
+        const result = await FeedbackModel.create(data);
+        
+        // Convert to plain object
+        const serializedResult = JSON.parse(JSON.stringify(result.toObject()));
+        
         revalidatePath("/feedback");
-        return { success: true };
+        
+        return createSuccessResponse(serializedResult);
     } catch (error) {
-        console.error("Failed to submit feedback:", error);
-        return { error: "Failed to submit feedback" };
+        return createErrorResponse(error, "submitFeedback");
     }
 }
