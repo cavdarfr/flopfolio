@@ -24,13 +24,16 @@ export function handleValidationError(error: mongoose.Error.ValidationError): st
 /**
  * Handles MongoDB duplicate key errors
  */
-export function handleDuplicateKeyError(error: any): string {
+// Define a type for MongoDB duplicate key errors
+interface MongoDBDuplicateKeyError {
+  code: number;
+  keyPattern: Record<string, number>;
+  keyValue: Record<string, string>;
+}
+
+export function handleDuplicateKeyError(error: unknown): string {
   if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
-    const mongoError = error as { 
-      code: number; 
-      keyPattern: Record<string, number>; 
-      keyValue: Record<string, string>; 
-    };
+    const mongoError = error as MongoDBDuplicateKeyError;
     
     const field = Object.keys(mongoError.keyPattern)[0];
     return `The ${field} "${mongoError.keyValue[field]}" is already taken.`;
