@@ -64,9 +64,14 @@ export default function UserForm({ user }: { user: UserFormValues | null }) {
 
             setIsCheckingSlug(true);
             try {
-                const response = await checkSlugAvailability(slug, userId);
+                const response = await checkSlugAvailability(
+                    slug,
+                    userId || undefined
+                );
                 if (response.success) {
-                    const { available } = response.data;
+                    const { available } = response.data as {
+                        available: boolean;
+                    };
                     if (!available) {
                         setSlugError("This slug is already taken");
                     } else {
