@@ -22,17 +22,20 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { UploadButton } from "@/lib/uploadthing";
 import Image from "next/image";
 import SelectStatus from "./SelectStatus";
-import { saveUser } from "@/actions/action";
+import { saveUser, checkSlugAvailability } from "@/actions/action";
 import { useAuth } from "@clerk/nextjs";
 import SelectSocial from "./SelectSocial";
+import { Loader2 } from "lucide-react";
 
 export default function UserForm({ user }: { user: UserFormValues | null }) {
     const { toast } = useToast();
     const { userId } = useAuth();
+    const [isCheckingSlug, setIsCheckingSlug] = useState(false);
+    const [slugError, setSlugError] = useState<string | null>(null);
 
     // Initialize avatarUrl state with user's avatar if available, or default
     const [avatarUrl, setAvatarUrl] = useState<string>(
@@ -50,6 +53,53 @@ export default function UserForm({ user }: { user: UserFormValues | null }) {
             business: user?.business || [],
         },
     });
+
+    // Debounced slug validation
+    const validateSlug = useCallback(
+        async (slug: string) => {
+            if (!slug || slug === user?.slug) {
+                setSlugError(null);
+                return;
+            }
+
+            setIsCheckingSlug(true);
+            try {
+                const response = await checkSlugAvailability(slug, userId);
+                if (response.success) {
+                    const { available } = response.data;
+                    if (!available) {
+                        setSlugError("This slug is already taken");
+                    } else {
+                        setSlugError(null);
+                    }
+                } else {
+                    setSlugError("Error checking slug availability");
+                }
+            } catch (error) {
+                console.error("Error checking slug availability:", error);
+                setSlugError("Error checking slug availability");
+            } finally {
+                setIsCheckingSlug(false);
+            }
+        },
+        [userId, user?.slug]
+    );
+
+    // Watch slug changes and validate
+    useEffect(() => {
+        const subscription = form.watch((value, { name }) => {
+            if (name === "slug") {
+                const slug = value.slug;
+                if (slug) {
+                    const timeoutId = setTimeout(() => {
+                        validateSlug(slug);
+                    }, 500); // 500ms debounce
+                    return () => clearTimeout(timeoutId);
+                }
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [form, validateSlug]);
 
     // Update form value when avatarUrl state changes
     useEffect(() => {
@@ -213,12 +263,25 @@ export default function UserForm({ user }: { user: UserFormValues | null }) {
                                         <FormItem>
                                             <FormLabel>Slug</FormLabel>
                                             <FormControl>
-                                                <Input
-                                                    placeholder="Enter your slug"
-                                                    {...field}
-                                                />
+                                                <div className="relative">
+                                                    <Input
+                                                        placeholder="Enter your slug"
+                                                        {...field}
+                                                        className={cn(
+                                                            slugError &&
+                                                                "border-red-500"
+                                                        )}
+                                                    />
+                                                    {isCheckingSlug && (
+                                                        <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
+                                                    )}
+                                                </div>
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage>
+                                                {slugError ||
+                                                    form.formState.errors.slug
+                                                        ?.message}
+                                            </FormMessage>
                                         </FormItem>
                                     )}
                                 />
