@@ -1,5 +1,10 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getUserBySlug } from "@/actions/action";
+import { getFlopsByUserSlug, SerializedFlop } from "@/actions/flop-actions";
+import { outcomeConfig } from "@/lib/config/outcome";
+import { formatYears } from "@/lib/og/templates";
+import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { LightbulbIcon } from "lucide-react";
@@ -35,6 +40,11 @@ export default async function Page({ params }: { params: Params }) {
 
     // Cast the data to UserFormValues type
     const user = response.data as UserFormValues;
+
+    const flopsResponse = await getFlopsByUserSlug(slug);
+    const flops = (
+        flopsResponse.success ? (flopsResponse.data ?? []) : []
+    ) as SerializedFlop[];
 
     return (
         <div className="w-full max-w-2xl mx-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-xl p-6 my-8">
@@ -89,8 +99,66 @@ export default async function Page({ params }: { params: Params }) {
                     </div>
                 )}
 
-                {/* Business */}
-                {user.business && user.business.length > 0 && (
+                {/* Flops (post-mortems) */}
+                {flops.length > 0 && (
+                    <div className="pt-6">
+                        <h2 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                            The flops
+                        </h2>
+                        <div className="space-y-4">
+                            {flops.map((flop) => {
+                                const outcome = outcomeConfig[flop.outcome];
+                                return (
+                                    <Link
+                                        key={flop.slug}
+                                        href={`/${slug}/${flop.slug}`}
+                                        className="group block rounded-2xl border border-zinc-200 dark:border-zinc-700 p-4 sm:p-6 transition-colors hover:border-zinc-400 dark:hover:border-zinc-500"
+                                    >
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                                                        {flop.title}
+                                                    </h3>
+                                                    <span className="font-mono text-xs text-zinc-400">
+                                                        {formatYears(
+                                                            flop.startedYear,
+                                                            flop.endedYear
+                                                        )}
+                                                    </span>
+                                                </div>
+                                                <Badge
+                                                    className={cn(
+                                                        "border-0 w-fit",
+                                                        outcome?.badgeClass
+                                                    )}
+                                                >
+                                                    {outcome?.label ??
+                                                        flop.outcome}
+                                                </Badge>
+                                            </div>
+                                            <ArrowUpRight className="h-5 w-5 shrink-0 text-zinc-300 transition-colors group-hover:text-zinc-900 dark:group-hover:text-zinc-100" />
+                                        </div>
+                                        <p className="mt-3 text-zinc-600 dark:text-zinc-300">
+                                            {flop.oneLiner}
+                                        </p>
+                                        {flop.lessons?.[0] && (
+                                            <div className="mt-4 flex gap-3 border-t border-dashed border-zinc-200 pt-4 dark:border-zinc-700">
+                                                <LightbulbIcon className="h-5 w-5 flex-shrink-0 text-yellow-500" />
+                                                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                                                    {flop.lessons[0]}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {/* Legacy business entries (pre-flop format) */}
+                {flops.length === 0 && user.business && user.business.length > 0 && (
                     <div className="pt-6">
                         <h2 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                             Business Journey
