@@ -70,7 +70,7 @@ const UserSchema: Schema = new Schema(
 );
 
 // Pre-save hook to format the slug
-UserSchema.pre<User>("save", function (next) {
+UserSchema.pre<User>("save", async function () {
     if (this.isModified("slug")) {
         this.slug = this.slug
             .toLowerCase()
@@ -83,10 +83,9 @@ UserSchema.pre<User>("save", function (next) {
 
         const slugRegex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
         if (!slugRegex.test(this.slug)) {
-            return next(new Error("Slug format is invalid."));
+            throw new Error("Slug format is invalid.");
         }
     }
-    next();
 });
 
 // Create and export the User model

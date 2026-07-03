@@ -339,7 +339,7 @@ export default function UserForm({ user }: { user: UserFormValues | null }) {
                                                 <FormLabel>Platform</FormLabel>
                                                 <FormControl>
                                                     <SelectSocial
-                                                        value={field.value}
+                                                        value={field.value ?? ""}
                                                         onValueChange={
                                                             field.onChange
                                                         }
