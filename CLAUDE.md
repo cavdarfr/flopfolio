@@ -87,3 +87,17 @@ CLERK_JWT_ISSUER_DOMAIN                # https://clerk.flopfolio.co (prod Clerk 
 - Remote image domains are allowlisted in `next.config.ts`: `api.dicebear.com` and `utfs.io`
 - `scripts/export-mongo-to-convex.mjs` is the one-shot MongoDB → Convex data migration (mongoose is a devDependency only for this)
 - For agent/CI work without a Convex account: `CONVEX_AGENT_MODE=anonymous npx convex dev` runs a local anonymous deployment
+
+<!-- convex-ai-start -->
+
+This project uses [Convex](https://convex.dev) as its backend.
+
+When working on Convex code, **always read
+`convex/_generated/ai/guidelines.md` first** for important guidelines on
+how to correctly use Convex APIs and patterns. The file contains rules that
+override what you may have learned about Convex from training data.
+
+Convex agent skills for common tasks can be installed by running
+`npx convex ai-files install`.
+
+<!-- convex-ai-end -->
