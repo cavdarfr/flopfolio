@@ -1,8 +1,8 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
-import dbConnect from "@/lib/db";
-import User from "@/models/UserSchema";
-import FlopModel, { CARD_TEMPLATES, CardTemplate } from "@/models/FlopSchema";
+import { fetchQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
+import { CARD_TEMPLATES, CardTemplate } from "@/lib/types/flop";
 import {
     renderCard,
     formatYears,
@@ -25,15 +25,12 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     const { userSlug, flopSlug } = await params;
     const q = req.nextUrl.searchParams;
 
-    await dbConnect();
-    const user = await User.findOne({ slug: userSlug }).lean();
-    if (!user) return new Response("Not found", { status: 404 });
-    const flop = await FlopModel.findOne({
-        clerkUserId: user.clerkUserId,
-        slug: flopSlug,
-        published: true,
-    }).lean();
-    if (!flop) return new Response("Not found", { status: 404 });
+    const result = await fetchQuery(api.flops.getBySlugs, {
+        userSlug,
+        flopSlug,
+    });
+    if ("error" in result) return new Response("Not found", { status: 404 });
+    const { flop, user } = result;
 
     const template = (
         CARD_TEMPLATES.includes(q.get("template") as CardTemplate)

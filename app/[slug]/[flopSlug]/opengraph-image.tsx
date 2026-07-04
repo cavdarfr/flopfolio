@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
-import dbConnect from "@/lib/db";
-import User from "@/models/UserSchema";
-import FlopModel from "@/models/FlopSchema";
+import { fetchQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
 import { renderCard, formatYears, CARD_SIZES } from "@/lib/og/templates";
 import { outcomeConfig } from "@/lib/config/outcome";
 import { loadCardFonts } from "@/lib/og/fonts";
@@ -15,15 +14,12 @@ type Params = Promise<{ slug: string; flopSlug: string }>;
 export default async function Image({ params }: { params: Params }) {
     const { slug, flopSlug } = await params;
 
-    await dbConnect();
-    const user = await User.findOne({ slug }).lean();
-    const flop = user
-        ? await FlopModel.findOne({
-              clerkUserId: user.clerkUserId,
-              slug: flopSlug,
-              published: true,
-          }).lean()
-        : null;
+    const result = await fetchQuery(api.flops.getBySlugs, {
+        userSlug: slug,
+        flopSlug,
+    });
+    const flop = "error" in result ? null : result.flop;
+    const user = "error" in result ? null : result.user;
 
     const fonts = await loadCardFonts().catch(() => []);
 

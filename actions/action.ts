@@ -1,11 +1,11 @@
 "use server";
 
-import dbConnect from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
-import User from "@/models/UserSchema"; // Assurez-vous d'avoir ce modèle
-import { UserFormValues } from "@/lib/userValidation";
+import { fetchQuery, fetchMutation } from "convex/nextjs";
 import { revalidatePath } from "next/cache";
-import FeedbackModel from "@/models/FeedbackSchema";
+import { api } from "@/convex/_generated/api";
+import { Doc } from "@/convex/_generated/dataModel";
+import { convexAuthToken } from "@/lib/convex-server";
+import { UserFormValues } from "@/lib/userValidation";
 import { FeedbackFormValues } from "@/lib/feedbackValidation";
 import {
     ActionResponse,
@@ -17,12 +17,32 @@ import {
 const slugCache = new Map<string, { available: boolean; timestamp: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
+/**
+ * Convex stores nested socials/business entries with an "id" field
+ * (field names starting with "_" are reserved); components expect "_id".
+ */
+function serializeUser(doc: Doc<"users">) {
+    const { _creationTime, createdAt, updatedAt, socials, business, ...rest } =
+        doc;
+    return {
+        ...rest,
+        bio: doc.bio ?? "",
+        avatarUrl: doc.avatarUrl ?? "",
+        socials: (socials ?? []).map(({ id, name, url }) => ({
+            _id: id,
+            name,
+            url,
+        })),
+        business: (business ?? []).map(({ id, ...b }) => ({ _id: id, ...b })),
+        createdAt: new Date(createdAt ?? _creationTime).toISOString(),
+        updatedAt: new Date(updatedAt ?? _creationTime).toISOString(),
+    };
+}
+
 export const getUser = async (): Promise<ActionResponse> => {
     try {
-        await dbConnect();
-        const { userId } = await auth();
-
-        if (!userId) {
+        const token = await convexAuthToken();
+        if (!token) {
             return {
                 success: false,
                 error: "User not authenticated",
@@ -30,9 +50,7 @@ export const getUser = async (): Promise<ActionResponse> => {
             };
         }
 
-        // Use lean() to get a plain JavaScript object instead of a Mongoose document
-        const user = await User.findOne({ clerkUserId: userId }).lean();
-
+        const user = await fetchQuery(api.users.getCurrent, {}, { token });
         if (!user) {
             return {
                 success: false,
@@ -41,23 +59,7 @@ export const getUser = async (): Promise<ActionResponse> => {
             };
         }
 
-        // Serialize the user object to ensure it's a plain object
-        const serializedUser = JSON.parse(
-            JSON.stringify({
-                ...user,
-                _id: user._id.toString(),
-                socials: user.socials?.map((social) => ({
-                    ...social,
-                    _id: social._id?.toString(),
-                })),
-                business: user.business?.map((business) => ({
-                    ...business,
-                    _id: business._id?.toString(),
-                })),
-            })
-        );
-
-        return createSuccessResponse(serializedUser);
+        return createSuccessResponse(serializeUser(user));
     } catch (error) {
         return createErrorResponse(error, "getUser");
     }
@@ -65,8 +67,6 @@ export const getUser = async (): Promise<ActionResponse> => {
 
 export const getUserBySlug = async (slug: string): Promise<ActionResponse> => {
     try {
-        await dbConnect();
-
         if (!slug) {
             return {
                 success: false,
@@ -75,9 +75,7 @@ export const getUserBySlug = async (slug: string): Promise<ActionResponse> => {
             };
         }
 
-        // Use lean() to get a plain JavaScript object instead of a Mongoose document
-        const user = await User.findOne({ slug }).lean();
-
+        const user = await fetchQuery(api.users.getBySlug, { slug });
         if (!user) {
             return {
                 success: false,
@@ -86,23 +84,7 @@ export const getUserBySlug = async (slug: string): Promise<ActionResponse> => {
             };
         }
 
-        // Serialize the user object to ensure it's a plain object
-        const serializedUser = JSON.parse(
-            JSON.stringify({
-                ...user,
-                _id: user._id.toString(),
-                socials: user.socials?.map((social) => ({
-                    ...social,
-                    _id: social._id?.toString(),
-                })),
-                business: user.business?.map((business) => ({
-                    ...business,
-                    _id: business._id?.toString(),
-                })),
-            })
-        );
-
-        return createSuccessResponse(serializedUser);
+        return createSuccessResponse(serializeUser(user));
     } catch (error) {
         return createErrorResponse(error, "getUserBySlug");
     }
@@ -123,56 +105,51 @@ export async function saveUser(
     }
 
     try {
-        // Connect to database
-        await dbConnect();
-
-        // Check if slug is already taken by another user
-        const existingUserWithSlug = await User.findOne({
-            slug: data.slug,
-            clerkUserId: { $ne: clerkUserId },
-        });
-
-        if (existingUserWithSlug) {
+        const token = await convexAuthToken();
+        if (!token) {
             return {
                 success: false,
-                error: `Slug "${data.slug}" is already taken`,
-                errorLocation: "Slug Validation",
+                error: "User not authenticated",
+                errorLocation: "saveUser/auth",
             };
         }
 
-        // Prepare data for saving
-        const cleanedData = {
-            ...data,
-            socials: data.socials?.map(({ _id, name, url }) => ({
-                _id,
-                name,
-                url,
-            })),
-            business: data.business?.map(
-                ({ _id, name, description, status, lessons, logoUrl }) => ({
-                    _id,
+        const result = await fetchMutation(
+            api.users.save,
+            {
+                name: data.name,
+                slug: data.slug,
+                bio: data.bio ?? "",
+                avatarUrl: data.avatarUrl ?? "",
+                socials: (data.socials ?? []).map(({ _id, name, url }) => ({
+                    id: _id || crypto.randomUUID(),
                     name,
-                    description,
-                    status,
-                    lessons,
-                    logoUrl,
-                })
-            ),
-            clerkUserId,
-        };
-
-        // Save to database
-        const result = await User.findOneAndUpdate(
-            { clerkUserId },
-            cleanedData,
-            { upsert: true, new: true, lean: true } // Use lean() to get a plain JavaScript object
+                    url,
+                })),
+                business: (data.business ?? []).map(
+                    ({ _id, name, description, status, lessons, logoUrl }) => ({
+                        id: _id || crypto.randomUUID(),
+                        name,
+                        description,
+                        status,
+                        lessons,
+                        logoUrl: logoUrl ?? "",
+                    })
+                ),
+            },
+            { token }
         );
 
-        // Properly serialize the result to avoid Mongoose document issues
-        const serializedResult = JSON.parse(JSON.stringify(result));
+        if (!result.ok || !result.user) {
+            return {
+                success: false,
+                error: result.ok ? "Profile not found" : result.error,
+                errorLocation: "saveUser/database",
+            };
+        }
 
         revalidatePath("/dashboard");
-        return createSuccessResponse(serializedResult);
+        return createSuccessResponse(serializeUser(result.user));
     } catch (error) {
         // Simple error handling with location information
         return createErrorResponse(error, "saveUser");
@@ -183,8 +160,6 @@ export async function submitFeedback(
     data: FeedbackFormValues
 ): Promise<ActionResponse> {
     try {
-        await dbConnect();
-
         if (!data) {
             return {
                 success: false,
@@ -193,15 +168,15 @@ export async function submitFeedback(
             };
         }
 
-        // Create the feedback and use lean() to get a plain JavaScript object
-        const result = await FeedbackModel.create(data);
-
-        // Convert to plain object
-        const serializedResult = JSON.parse(JSON.stringify(result.toObject()));
+        const result = await fetchMutation(api.feedback.submit, {
+            name: data.name,
+            email: data.email,
+            message: data.message,
+        });
 
         revalidatePath("/feedback");
 
-        return createSuccessResponse(serializedResult);
+        return createSuccessResponse(result);
     } catch (error) {
         return createErrorResponse(error, "submitFeedback");
     }
@@ -213,25 +188,21 @@ export async function checkSlugAvailability(
 ): Promise<ActionResponse> {
     try {
         // Check cache first
-        const cachedResult = slugCache.get(slug);
+        const cacheKey = `${slug}:${currentUserId ?? ""}`;
+        const cachedResult = slugCache.get(cacheKey);
         if (cachedResult && Date.now() - cachedResult.timestamp < CACHE_TTL) {
             return createSuccessResponse({ available: cachedResult.available });
         }
 
-        await dbConnect();
-
-        // Check if slug is already taken by another user
-        const existingUser = await User.findOne({
-            slug,
-            clerkUserId: currentUserId
-                ? { $ne: currentUserId }
-                : { $exists: true },
-        });
-
-        const available = !existingUser;
+        const token = await convexAuthToken();
+        const { available } = await fetchQuery(
+            api.users.checkSlugAvailability,
+            { slug },
+            token ? { token } : undefined
+        );
 
         // Update cache
-        slugCache.set(slug, { available, timestamp: Date.now() });
+        slugCache.set(cacheKey, { available, timestamp: Date.now() });
 
         return createSuccessResponse({ available });
     } catch (error) {

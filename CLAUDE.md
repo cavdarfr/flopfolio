@@ -4,11 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Flopfolio is a SaaS platform where entrepreneurs showcase their full business journey — successes and failures. Users create profiles with a unique slug, add businesses/ventures with statuses and lessons learned, and share a public portfolio page.
+Flopfolio is a SaaS platform where entrepreneurs showcase their full business journey — successes and failures. Users create profiles with a unique slug, add flops (post-mortems of failed ventures) with lessons learned, and share a public portfolio page with generated share cards.
 
 ## Commands
 
 - `pnpm dev` — start dev server (Next.js on localhost:3000)
+- `npx convex dev` — run Convex locally (pushes functions, watches for changes; required alongside `pnpm dev`)
 - `pnpm build` — production build
 - `pnpm lint` — ESLint
 - `pnpm optimize-images` — run image optimization script
@@ -18,8 +19,8 @@ No test framework is configured.
 ## Tech Stack
 
 - **Next.js 15** (App Router) + **React 19** + **TypeScript**
-- **MongoDB** via **Mongoose** (connection singleton in `lib/db.ts`, env var: `MONGO_URI`)
-- **Clerk** for auth (middleware in `middleware.ts` protects `/dashboard` routes)
+- **Convex** for the database (schema in `convex/schema.ts`, functions in `convex/*.ts`)
+- **Clerk** for auth (middleware in `middleware.ts` protects `/dashboard` routes); Convex validates Clerk JWTs via the "convex" JWT template (`convex/auth.config.ts`)
 - **UploadThing** for file uploads (4MB max, configured in `lib/uploadthing.ts`)
 - **Tailwind CSS v4** + **shadcn/ui** (Radix UI primitives in `components/ui/`)
 - **Zod** for validation schemas + **React Hook Form**
@@ -32,54 +33,57 @@ No test framework is configured.
 - `app/(auth)/` — Clerk sign-in/sign-up pages
 - `app/(public)/` — Landing page, about, feedback (no auth required)
 - `app/(protected)/` — Dashboard (auth required via Clerk middleware)
-- `app/[slug]/` — Public user profile pages (dynamic route at root level)
+- `app/[slug]/` — Public user profile pages; `app/[slug]/[flopSlug]/` — public flop pages
+- `app/api/card/` — share-card PNG generation (next/og)
 - `app/api/uploadthing/` — UploadThing file upload API route
 
-### Server Actions (`actions/action.ts`)
+### Data Layer
 
-All data mutations go through a single server actions file. Every action returns `ActionResponse` (defined in `lib/error-utils.ts`) with `{ success, data?, error?, errorLocation? }`. Key actions:
-- `getUser()` — fetch current authenticated user
-- `getUserBySlug(slug)` — fetch user by public slug
-- `saveUser(data, clerkUserId)` — upsert user profile (uses `findOneAndUpdate` with upsert)
-- `checkSlugAvailability(slug, currentUserId?)` — checks slug uniqueness with in-memory 5-min cache
-- `submitFeedback(data)` — save contact form feedback
+Convex tables (`convex/schema.ts`): **users**, **flops**, **feedback**.
+Convex functions: `convex/users.ts`, `convex/flops.ts`, `convex/feedback.ts`.
 
-### Data Model
+Server actions (`actions/action.ts`, `actions/flop-actions.ts`) are thin adapters over Convex via `fetchQuery`/`fetchMutation` from `convex/nextjs`. Every action returns `ActionResponse` (defined in `lib/error-utils.ts`) with `{ success, data?, error?, errorLocation? }`. Components only talk to server actions, never to Convex directly.
 
-Two Mongoose models in `models/`:
-- **User** (`UserSchema.ts`) — `clerkUserId` (unique), `name`, `slug` (unique, lowercase, 3-50 chars, regex-validated), `bio`, `avatarUrl`, nested arrays of `socials` and `business`, timestamps
-- **Feedback** (`FeedbackSchema.ts`)
-
-Business status enum: `active | inactive | pending | sold | cancelled | failed` (config in `lib/config/status.ts`)
+Auth inside Convex functions comes from `ctx.auth.getUserIdentity()` (identity.subject = Clerk user id). Server actions obtain the JWT via `convexAuthToken()` in `lib/convex-server.ts` (Clerk JWT template named `convex`).
 
 ### Validation
 
-Zod schemas mirror Mongoose schemas:
+Zod schemas mirror the Convex schema:
 - `lib/userValidation.ts` — `UserSchema` + `UserFormValues` type
+- `lib/flopValidation.ts` — `FlopSchema` + `FlopFormValues` type
 - `lib/feedbackValidation.ts` — feedback form schema
 
-TypeScript types in `lib/types/user.ts` define `User`, `Business`, `Social` interfaces used across components.
+Shared client-safe constants/types live in `lib/types/` (`user.ts`, `flop.ts` — flop outcomes, card templates). Never import from `convex/_generated` in client components.
 
 ### Key Patterns
 
-- Mongoose documents are serialized via `JSON.parse(JSON.stringify(...))` with explicit `_id.toString()` calls before returning from server actions
-- MongoDB connection uses a global cache pattern (`lib/db.ts`) to survive HMR in dev
-- Slug has a pre-save hook in the Mongoose schema that normalizes format
+- Convex forbids field names starting with `_`, so nested socials/business entries are stored with `id`; the server-action layer maps `id` ↔ `_id` because components expect `_id`
+- Convex docs carry `_creationTime` (number); the actions serialize `createdAt`/`updatedAt` to ISO strings for components. Migrated documents keep their original dates in optional `createdAt`/`updatedAt` fields
+- Slug normalization (the old Mongoose pre-save hook) lives in `convex/users.ts` `normalizeSlug`
+- Expected failures (slug taken, not found) are returned from mutations as `{ ok: false, error }`, not thrown
 - `next.config.ts` strips console logs in production, enables tree-shaking for lucide-react and radix icons
 
 ## Environment Variables
 
 ```
-MONGO_URI                              # MongoDB connection string (note: NOT MONGODB_URI)
+# Next.js (.env.local / Vercel)
+NEXT_PUBLIC_CONVEX_URL                 # Convex deployment URL
+CONVEX_DEPLOYMENT                      # dev only, written by `npx convex dev`
+CONVEX_DEPLOY_KEY                      # Vercel only, for `npx convex deploy`
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY      # Clerk public key
 CLERK_SECRET_KEY                       # Clerk secret key
-UPLOADTHING_SECRET                     # UploadThing secret
-UPLOADTHING_APP_ID                     # UploadThing app ID
+NEXT_PUBLIC_APP_URL                    # canonical app URL (OG images, metadata)
+UPLOADTHING_TOKEN / UPLOADTHING_API_KEY
+
+# Convex deployment env (npx convex env set ...)
+CLERK_JWT_ISSUER_DOMAIN                # https://clerk.flopfolio.co (prod Clerk issuer)
 ```
 
 ## Gotchas
 
-- The env var is `MONGO_URI` (not `MONGODB_URI`) despite the README saying otherwise — see `lib/db.ts`
-- Slug uniqueness is checked both at the Mongoose schema level and in the `saveUser` action
+- `pnpm-workspace.yaml` must keep its `packages` field: Vercel builds with pnpm 9, which errors on a workspace file without it. The `allowBuilds` key in the same file is the pnpm 10+ build-script approval list
+- Slug uniqueness is enforced in `convex/users.ts` (`by_slug` index) and per-user flop slugs in `convex/flops.ts` (`by_user_slug` index)
 - The `UserForm` component is the main complex form — handles profile, socials, and businesses in one form with React Hook Form field arrays
 - Remote image domains are allowlisted in `next.config.ts`: `api.dicebear.com` and `utfs.io`
+- `scripts/export-mongo-to-convex.mjs` is the one-shot MongoDB → Convex data migration (mongoose is a devDependency only for this)
+- For agent/CI work without a Convex account: `CONVEX_AGENT_MODE=anonymous npx convex dev` runs a local anonymous deployment

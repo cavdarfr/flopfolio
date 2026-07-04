@@ -1,0 +1,12 @@
+# "packages" must be present: Vercel builds with pnpm 9, which rejects a
+# workspace file without it ("packages field missing or empty").
+packages:
+  - "."
+
+# Build-script approvals for pnpm 10+ (pnpm 9 ignores this key and runs all
+# postinstall scripts anyway).
+allowBuilds:
+  "@clerk/shared": false
+  esbuild: true
+  msgpackr-extract: false
+  sharp: true

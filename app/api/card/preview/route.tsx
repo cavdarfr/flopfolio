@@ -6,7 +6,7 @@ import {
     CardFormat,
     CardData,
 } from "@/lib/og/templates";
-import { CARD_TEMPLATES, CardTemplate } from "@/models/FlopSchema";
+import { CARD_TEMPLATES, CardTemplate } from "@/lib/types/flop";
 import { loadCardFonts } from "@/lib/og/fonts";
 
 /**
