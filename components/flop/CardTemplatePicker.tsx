@@ -1,6 +1,6 @@
 "use client";
 
-import { CARD_TEMPLATES, type CardTemplate } from "@/models/FlopSchema";
+import { CARD_TEMPLATES, type CardTemplate } from "@/lib/types/flop";
 import { cn } from "@/lib/utils";
 
 const TEMPLATE_LABELS: Record<CardTemplate, string> = {

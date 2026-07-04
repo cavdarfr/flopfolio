@@ -9,7 +9,7 @@ import {
     flopSlugFromTitle,
     type FlopFormValues,
 } from "@/lib/flopValidation";
-import { FLOP_OUTCOMES } from "@/models/FlopSchema";
+import { FLOP_OUTCOMES } from "@/lib/types/flop";
 import { outcomeConfig } from "@/lib/config/outcome";
 import { saveFlop } from "@/actions/flop-actions";
 import { useToast } from "@/hooks/use-toast";

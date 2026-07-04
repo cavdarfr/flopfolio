@@ -9,7 +9,7 @@
  *  - editorial : magazine pull-quote — vermilion ground, serif italic lesson
  */
 import type { ReactElement } from "react";
-import type { CardTemplate } from "@/models/FlopSchema";
+import type { CardTemplate } from "@/lib/types/flop";
 
 export type CardData = {
     title: string;

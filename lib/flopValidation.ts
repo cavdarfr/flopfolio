@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { FLOP_OUTCOMES, CARD_TEMPLATES } from "@/models/FlopSchema";
+import { FLOP_OUTCOMES, CARD_TEMPLATES } from "@/lib/types/flop";
 
 export const FlopSchema = z.object({
     slug: z

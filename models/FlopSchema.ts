@@ -1,17 +1,15 @@
 import mongoose, { Schema, Model, Document } from "mongoose";
+import {
+    FLOP_OUTCOMES,
+    CARD_TEMPLATES,
+    type FlopOutcome,
+    type CardTemplate,
+} from "@/lib/types/flop";
 
-export const FLOP_OUTCOMES = [
-    "shutdown",
-    "pivoted",
-    "acquired",
-    "abandoned",
-    "still-running",
-] as const;
-
-export type FlopOutcome = (typeof FLOP_OUTCOMES)[number];
-
-export const CARD_TEMPLATES = ["tombstone", "autopsy", "editorial"] as const;
-export type CardTemplate = (typeof CARD_TEMPLATES)[number];
+// Re-export for server-side consumers; client code must import from
+// "@/lib/types/flop" to avoid bundling Mongoose.
+export { FLOP_OUTCOMES, CARD_TEMPLATES };
+export type { FlopOutcome, CardTemplate };
 
 export interface FlopDocument extends Document {
     clerkUserId: string;

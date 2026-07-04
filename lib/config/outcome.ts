@@ -1,5 +1,5 @@
 // lib/config/outcome.ts
-import type { FlopOutcome } from "@/models/FlopSchema";
+import type { FlopOutcome } from "@/lib/types/flop";
 
 export const outcomeConfig: Record<
     FlopOutcome,
