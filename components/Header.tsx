@@ -10,26 +10,26 @@ import {
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
+
 export default function Header() {
-    const user = useUser();
+    const { isLoaded, isSignedIn } = useUser();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
-        <header className="flex flex-row items-center justify-between px-5 py-10">
+        <header className="flex flex-row items-center justify-between border-b-2 border-ink px-5 py-5">
             <div>
-                <Link href="/" className="flex flex-row gap-4 items-center">
-                    <Image
-                        src={"/logo.avif"}
-                        alt="Flopfolio Logo"
-                        width={34}
-                        height={34}
-                        priority
-                        className="rounded-md"
-                    />
-                    <span className="text-2xl font-bold">Flopfolio</span>
+                <Link href="/" className="flex items-baseline gap-2">
+                    <span
+                        aria-hidden="true"
+                        className="font-display text-xl leading-none text-vermilion"
+                    >
+                        †
+                    </span>
+                    <span className="font-mono text-lg font-semibold lowercase tracking-[0.25em]">
+                        flopfolio
+                    </span>
                 </Link>
             </div>
 
@@ -45,21 +45,32 @@ export default function Header() {
                         <Menu className="h-5 w-5" />
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="sm:max-w-sm p-6">
+                <SheetContent
+                    side="right"
+                    className="sm:max-w-sm border-l-2 border-ink bg-bone p-6"
+                >
                     <SheetHeader>
-                        <SheetTitle>Navigation</SheetTitle>
-                        <SheetDescription>Explore Flopfolio</SheetDescription>
+                        <SheetTitle className="font-mono uppercase tracking-[0.2em]">
+                            Navigation
+                        </SheetTitle>
+                        <SheetDescription className="font-mono text-xs text-muted">
+                            Explore Flopfolio
+                        </SheetDescription>
                     </SheetHeader>
-                    <nav className="grid gap-4 text-lg mt-4">
+                    <nav className="mt-6 grid gap-5 font-mono text-sm uppercase tracking-[0.15em]">
                         {/* Navigation links inside Sheet */}
-                        <Link href="/">Home</Link>
-                        <Link href="/about">About</Link>
-                        {/* <Link href="/contact">Contact</Link> */}
-                        {user ? (
+                        <Link href="/" className="hover:text-vermilion">
+                            Home
+                        </Link>
+                        <Link href="/about" className="hover:text-vermilion">
+                            About
+                        </Link>
+                        {isSignedIn ? (
                             <Link href="/dashboard">
                                 <Button
                                     variant="default"
-                                    className="rounded-full w-full text-xl h-12"
+                                    className="w-full"
+                                    disabled={!isLoaded}
                                 >
                                     Dashboard
                                 </Button>
@@ -68,7 +79,8 @@ export default function Header() {
                             <Link href="/sign-up">
                                 <Button
                                     variant="default"
-                                    className="rounded-full w-full text-xl h-12"
+                                    className="w-full"
+                                    disabled={!isLoaded}
                                 >
                                     Get Started
                                 </Button>
@@ -79,32 +91,28 @@ export default function Header() {
             </Sheet>
 
             {/* Desktop Navigation - Hidden on mobile */}
-            <nav className="hidden md:flex flex-row gap-8 items-center">
-                <Link href="/">
-                    <Button variant={"link"} className="text-xl px-0">
-                        Home
-                    </Button>
+            <nav className="hidden md:flex flex-row items-center gap-8">
+                <Link
+                    href="/"
+                    className="font-mono text-sm uppercase tracking-[0.15em] transition-colors hover:text-vermilion"
+                >
+                    Home
                 </Link>
-                <Link href="/about">
-                    <Button variant={"link"} className="text-xl px-0">
-                        About
-                    </Button>
+                <Link
+                    href="/about"
+                    className="font-mono text-sm uppercase tracking-[0.15em] transition-colors hover:text-vermilion"
+                >
+                    About
                 </Link>
-                {user ? (
+                {isSignedIn ? (
                     <Link href="/dashboard">
-                        <Button
-                            className="rounded-full text-xl h-12"
-                            size={"lg"}
-                        >
+                        <Button size={"lg"} disabled={!isLoaded}>
                             Dashboard
                         </Button>
                     </Link>
                 ) : (
                     <Link href="/sign-up">
-                        <Button
-                            className="rounded-full text-xl h-12"
-                            size={"lg"}
-                        >
+                        <Button size={"lg"} disabled={!isLoaded}>
                             Get Started
                         </Button>
                     </Link>

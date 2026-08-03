@@ -39,9 +39,9 @@ export default async function DashboardPage() {
                         </p>
                     </div>
                     <Button asChild>
-                        <Link href="/dashboard/flops/new">
+                        <Link href={user ? "/dashboard/flops/new" : "#profile"}>
                             <Plus className="mr-1 h-4 w-4" />
-                            New flop
+                            {user ? "New flop" : "Create profile first"}
                         </Link>
                     </Button>
                 </div>
@@ -50,11 +50,11 @@ export default async function DashboardPage() {
                         <p>Note: {flopsResponse.error}</p>
                     </div>
                 )}
-                <FlopList flops={flops} />
+                <FlopList flops={flops} userSlug={user?.slug} />
             </section>
 
             {/* Profile */}
-            <section className="bg-white border border-zinc-200 rounded-3xl shadow-xl p-6">
+            <section id="profile" className="bg-white border border-zinc-200 rounded-3xl shadow-xl p-6">
                 <div className="flex justify-between items-center">
                     <h2 className="text-2xl font-bold mb-4">Profile</h2>
                     <Button variant={"destructive"} asChild>

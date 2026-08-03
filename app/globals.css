@@ -2,11 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Optimiser le rendu des polices */
+/* Flopfolio brand tokens — same palette as the share-card art directions
+   (lib/og/templates.tsx): bone ground, ink type, vermilion + acid accents. */
+:root {
+  --bone: #efece3;
+  --surface: #f6f3ea;
+  --ink: #151310;
+  --muted: #6b675e;
+  --faint: #96917f;
+  --line: #d9d5c8;
+  --vermilion: #b2361f;
+  --vermilion-bright: #e8442b;
+  --acid: #d3f244;
+  --cream: #f6f1e7;
+  --night: #0d1117;
+}
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--acid);
+  color: var(--ink);
 }
 
 /* Optimiser les animations */
@@ -14,7 +33,7 @@ body {
   .will-change-transform {
     will-change: transform;
   }
-  
+
   .hardware-accelerated {
     transform: translateZ(0);
   }

@@ -16,29 +16,29 @@ import { loadCardFonts } from "@/lib/og/fonts";
 export async function GET(req: NextRequest) {
     const q = req.nextUrl.searchParams;
 
-    const template = (
-        CARD_TEMPLATES.includes(q.get("template") as CardTemplate)
-            ? q.get("template")
-            : "tombstone"
-    ) as CardTemplate;
-    const format = (
-        ["og", "square", "story"].includes(q.get("format") ?? "")
-            ? q.get("format")
-            : "og"
-    ) as CardFormat;
+    const requestedTemplate = q.get("template");
+    if (requestedTemplate && !CARD_TEMPLATES.includes(requestedTemplate as CardTemplate)) {
+        return new Response("Invalid template", { status: 400 });
+    }
+    const template = (requestedTemplate ?? "tombstone") as CardTemplate;
+    const requestedFormat = q.get("format");
+    if (requestedFormat && !["og", "square", "story"].includes(requestedFormat)) {
+        return new Response("Invalid format", { status: 400 });
+    }
+    const format = (requestedFormat ?? "og") as CardFormat;
 
     const data: CardData = {
-        title: q.get("title")?.trim() || "CloudCrate",
+        title: q.get("title")?.trim().slice(0, 80) || "CloudCrate — fictional demo",
         oneLiner:
-            q.get("oneLiner")?.trim() ||
+            q.get("oneLiner")?.trim().slice(0, 140) ||
             "Dropbox for construction sites. Nobody on a construction site asked for it.",
-        cause: q.get("cause")?.trim() || "No distribution channel",
-        years: q.get("years")?.trim() || "2021 — 2023",
+        cause: q.get("cause")?.trim().slice(0, 80) || "No distribution channel",
+        years: q.get("years")?.trim().slice(0, 24) || "2021 — 2023",
         lesson:
-            q.get("lesson")?.trim() ||
+            q.get("lesson")?.trim().slice(0, 220) ||
             "Build the audience before you build the product.",
-        author: q.get("author")?.trim() || "hakan",
-        outcome: q.get("outcome")?.trim() || "Shut down",
+        author: q.get("author")?.trim().slice(0, 80) || "fictional-demo",
+        outcome: q.get("outcome")?.trim().slice(0, 40) || "Shut down",
     };
 
     const { width, height } = CARD_SIZES[format];

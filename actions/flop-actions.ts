@@ -14,14 +14,15 @@ import {
 
 export type SerializedFlop = Omit<FlopFormValues, "endedYear"> & {
     _id: string;
-    clerkUserId: string;
     endedYear?: number;
     views: number;
     createdAt: string;
     updatedAt: string;
 };
 
-function serializeFlop(doc: Doc<"flops">): SerializedFlop {
+type PublicFlop = Omit<Doc<"flops">, "clerkUserId" | "ownerTokenIdentifier">;
+
+function serializeFlop(doc: PublicFlop): SerializedFlop {
     const { _creationTime, createdAt, updatedAt, ...rest } = doc;
     return {
         ...rest,
@@ -177,7 +178,10 @@ export async function saveFlop(
             revalidatePath(`/${user.slug}`);
             revalidatePath(`/${user.slug}/${parsed.data.slug}`);
         }
-        return createSuccessResponse(serializeFlop(result.flop));
+        return createSuccessResponse({
+            ...serializeFlop(result.flop),
+            userSlug: result.userSlug,
+        });
     } catch (error) {
         return createErrorResponse(error, "saveFlop");
     }

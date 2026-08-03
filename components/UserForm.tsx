@@ -30,6 +30,7 @@ import { saveUser, checkSlugAvailability } from "@/actions/action";
 import { useAuth } from "@clerk/nextjs";
 import SelectSocial from "./SelectSocial";
 import { Loader2 } from "lucide-react";
+import { buildDemoProfile, DEMO_NOTICE } from "@/lib/demo/fixtures";
 
 export default function UserForm({ user }: { user: UserFormValues | null }) {
     const { toast } = useToast();
@@ -193,6 +194,16 @@ export default function UserForm({ user }: { user: UserFormValues | null }) {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6 w-full"
             >
+                {!user && (
+                    <div className="border border-dashed border-zinc-300 p-4">
+                        <p className="text-sm">{DEMO_NOTICE}</p>
+                        <Button type="button" variant="outline" className="mt-3" onClick={() => {
+                            const demo = buildDemoProfile(userId ?? undefined);
+                            setAvatarUrl(demo.avatarUrl ?? "");
+                            form.reset(demo);
+                        }}>Use fictional demo profile</Button>
+                    </div>
+                )}
                 {/* User Profile Accordion */}
                 <Accordion
                     type="single"

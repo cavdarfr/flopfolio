@@ -6,8 +6,6 @@ import { outcomeConfig } from "@/lib/config/outcome";
 import { formatYears } from "@/lib/og/templates";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
-import { Separator } from "@/components/ui/separator";
-import { LightbulbIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import GitHubIcon from "@/components/icons/GitHubIcon";
@@ -47,8 +45,8 @@ export default async function Page({ params }: { params: Params }) {
     ) as SerializedFlop[];
 
     return (
-        <div className="w-full max-w-2xl mx-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-xl p-6 my-8">
-            <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
+        <div className="w-full max-w-2xl mx-auto bg-surface border-2 border-ink shadow-slab p-6 my-8">
+            <div className="divide-y divide-line">
                 {/* User info */}
                 <div className="pb-6">
                     <div className="flex items-center gap-4 mb-4">
@@ -57,26 +55,24 @@ export default async function Page({ params }: { params: Params }) {
                             alt={user.name}
                             width={80}
                             height={80}
-                            className="rounded-full ring-2 ring-white dark:ring-zinc-800"
+                            className="border-2 border-ink"
                         />
                         <div>
-                            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+                            <h1 className="font-display text-2xl uppercase tracking-tight">
                                 {user.name}
                             </h1>
-                            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                            <p className="font-mono text-sm text-faint">
                                 @{user.slug}
                             </p>
                         </div>
                     </div>
-                    <p className="text-zinc-600 dark:text-zinc-300 text-lg">
-                        {user.bio || ""}
-                    </p>
+                    <p className="text-lg text-muted">{user.bio || ""}</p>
                 </div>
 
                 {/* Socials */}
                 {user.socials && user.socials.length > 0 && (
                     <div className="py-6">
-                        <h2 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                        <h2 className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-faint">
                             My Socials
                         </h2>
                         <div className="flex items-center gap-4">
@@ -89,7 +85,7 @@ export default async function Page({ params }: { params: Params }) {
                                         href={social.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                                        className="p-2 transition-colors hover:text-vermilion"
                                     >
                                         <Icon size={34} />
                                     </a>
@@ -102,50 +98,48 @@ export default async function Page({ params }: { params: Params }) {
                 {/* Flops (post-mortems) */}
                 {flops.length > 0 && (
                     <div className="pt-6">
-                        <h2 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                        <h2 className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-faint">
                             The flops
                         </h2>
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                             {flops.map((flop) => {
                                 const outcome = outcomeConfig[flop.outcome];
                                 return (
                                     <Link
                                         key={flop.slug}
                                         href={`/${slug}/${flop.slug}`}
-                                        className="group block rounded-2xl border border-zinc-200 dark:border-zinc-700 p-4 sm:p-6 transition-colors hover:border-zinc-400 dark:hover:border-zinc-500"
+                                        className="group block border-2 border-ink bg-bone p-4 transition-all hover:-translate-y-[2px] hover:shadow-slab-sm sm:p-6"
                                     >
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex flex-col gap-2">
-                                                <div className="flex flex-wrap items-center gap-2">
-                                                    <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                                                <div className="flex flex-wrap items-baseline gap-3">
+                                                    <h3 className="font-display text-xl uppercase tracking-tight">
                                                         {flop.title}
                                                     </h3>
-                                                    <span className="font-mono text-xs text-zinc-400">
+                                                    <span className="font-mono text-xs text-faint">
+                                                        †{" "}
                                                         {formatYears(
                                                             flop.startedYear,
                                                             flop.endedYear
                                                         )}
                                                     </span>
                                                 </div>
-                                                <Badge
-                                                    className={cn(
-                                                        "border-0 w-fit",
-                                                        outcome?.badgeClass
-                                                    )}
-                                                >
+                                                <span className="w-fit rounded-full border-2 border-ink px-3 py-0.5 font-mono text-[10px] uppercase tracking-[0.2em]">
                                                     {outcome?.label ??
                                                         flop.outcome}
-                                                </Badge>
+                                                </span>
                                             </div>
-                                            <ArrowUpRight className="h-5 w-5 shrink-0 text-zinc-300 transition-colors group-hover:text-zinc-900 dark:group-hover:text-zinc-100" />
+                                            <ArrowUpRight className="h-5 w-5 shrink-0 text-faint transition-colors group-hover:text-vermilion" />
                                         </div>
-                                        <p className="mt-3 text-zinc-600 dark:text-zinc-300">
+                                        <p className="mt-3 text-muted">
                                             {flop.oneLiner}
                                         </p>
                                         {flop.lessons?.[0] && (
-                                            <div className="mt-4 flex gap-3 border-t border-dashed border-zinc-200 pt-4 dark:border-zinc-700">
-                                                <LightbulbIcon className="h-5 w-5 flex-shrink-0 text-yellow-500" />
-                                                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                                            <div className="mt-4 border-t border-dashed border-faint pt-3">
+                                                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-vermilion">
+                                                    Lesson
+                                                </p>
+                                                <p className="mt-1 text-sm font-medium">
                                                     {flop.lessons[0]}
                                                 </p>
                                             </div>
@@ -160,19 +154,19 @@ export default async function Page({ params }: { params: Params }) {
                 {/* Legacy business entries (pre-flop format) */}
                 {flops.length === 0 && user.business && user.business.length > 0 && (
                     <div className="pt-6">
-                        <h2 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                        <h2 className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-faint">
                             Business Journey
                         </h2>
                         <div className="space-y-6">
                             {user.business.map((business) => (
                                 <div
                                     key={business.name}
-                                    className="rounded-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden"
+                                    className="border-2 border-ink bg-bone overflow-hidden"
                                 >
                                     <div className="p-4 sm:p-6 flex flex-col flex-1">
                                         <div className="flex items-center justify-between">
                                             <div className="flex flex-col gap-2">
-                                                <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+                                                <h3 className="font-display text-xl uppercase tracking-tight">
                                                     {business.name}
                                                 </h3>
                                                 <Badge
@@ -207,17 +201,16 @@ export default async function Page({ params }: { params: Params }) {
                                                 />
                                             )}
                                         </div>
-                                        <p className="text-zinc-600 dark:text-zinc-300 my-4 ">
+                                        <p className="text-muted my-4 ">
                                             {business.description}
                                         </p>
-                                        <Separator className="mb-4" />
-                                        <div>
-                                            <div className="flex gap-3">
-                                                <LightbulbIcon className="w-6 h-6 text-yellow-500 flex-shrink-0 mt-1" />
-                                                <p className="text-zinc-600 dark:text-zinc-300">
-                                                    {business.lessons}
-                                                </p>
-                                            </div>
+                                        <div className="border-t border-dashed border-faint pt-3">
+                                            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-vermilion">
+                                                Lesson
+                                            </p>
+                                            <p className="mt-1 text-sm font-medium">
+                                                {business.lessons}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, type Path, type Resolver, type SubmitHandler } from "react-hook-form";
+import { useForm, useWatch, type Path, type Resolver, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     FlopSchema,
@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowLeft, ArrowRight, Loader2, Plus, Trash2 } from "lucide-react";
 import CardTemplatePicker from "./CardTemplatePicker";
+import { DEMO_FLOP, DEMO_NOTICE } from "@/lib/demo/fixtures";
 
 const STEP_LABELS = ["", "The pitch", "The story", "The lessons", "Publish"];
 const LAST_STEP = 4;
@@ -130,7 +131,10 @@ export default function FlopWizard({ existingFlop }: FlopWizardProps) {
                     : "Saved as a draft — publish it whenever you're ready.",
                 variant: "success",
             });
-            router.push("/dashboard");
+            const saved = res.data as { userSlug?: string } | undefined;
+            router.push(values.published && saved?.userSlug
+                ? `/${saved.userSlug}/${values.slug}`
+                : "/dashboard");
         } else {
             toast({
                 title: "Error saving flop",
@@ -141,9 +145,9 @@ export default function FlopWizard({ existingFlop }: FlopWizardProps) {
     };
 
     // Reactive values for counters and card previews
-    const oneLiner = form.watch("oneLiner");
-    const causeOfFailure = form.watch("causeOfFailure");
-    const lessons = form.watch("lessons");
+    const oneLiner = useWatch({ control: form.control, name: "oneLiner" });
+    const causeOfFailure = useWatch({ control: form.control, name: "causeOfFailure" });
+    const lessons = useWatch({ control: form.control, name: "lessons" });
 
     const addLesson = () => {
         if (lessons.length < 3) {
@@ -177,7 +181,8 @@ export default function FlopWizard({ existingFlop }: FlopWizardProps) {
         <div className="w-full space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-2xl font-bold text-zinc-900">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                <div><h1 className="text-2xl font-bold text-zinc-900">
                     {isEdit ? "Edit flop" : "New flop"}
                 </h1>
                 <p className="text-sm text-zinc-500">
@@ -185,6 +190,10 @@ export default function FlopWizard({ existingFlop }: FlopWizardProps) {
                         ? "Refine the post-mortem — changes go live on save."
                         : "Every failure deserves a proper post-mortem."}
                 </p>
+                </div>
+                {!isEdit && <Button type="button" variant="outline" size="sm" onClick={() => form.reset(DEMO_FLOP)}>Use fictional example</Button>}
+                </div>
+                {!isEdit && <p className="mt-2 text-xs text-zinc-500">{DEMO_NOTICE}</p>}
             </div>
 
             {/* Progress indicator */}

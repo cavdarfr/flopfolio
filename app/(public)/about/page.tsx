@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Users, Sparkles } from "lucide-react";
+import { Heart, BookOpen, Share2 } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -46,15 +46,15 @@ export default function AboutPage() {
                         <CardContent className="pt-6">
                             <div className="flex flex-col items-center text-center gap-4">
                                 <div className="p-3 bg-zinc-100 rounded-full">
-                                    <Users className="w-6 h-6 text-blue-500" />
+                                    <BookOpen className="w-6 h-6 text-blue-500" />
                                 </div>
                                 <h3 className="text-xl font-semibold">
-                                    Community Driven
+                                    Structured Reflection
                                 </h3>
                                 <p className="text-zinc-600 dark:text-zinc-300">
-                                    A platform where entrepreneurs can connect,
-                                    share experiences, and learn from each
-                                    other.
+                                    A guided post-mortem turns context,
+                                    decisions, outcomes, and lessons into a
+                                    story people can actually follow.
                                 </p>
                             </div>
                         </CardContent>
@@ -64,14 +64,15 @@ export default function AboutPage() {
                         <CardContent className="pt-6">
                             <div className="flex flex-col items-center text-center gap-4">
                                 <div className="p-3 bg-zinc-100 rounded-full">
-                                    <Sparkles className="w-6 h-6 text-green-500" />
+                                    <Share2 className="w-6 h-6 text-green-500" />
                                 </div>
                                 <h3 className="text-xl font-semibold">
-                                    Continuous Growth
+                                    Built to Share
                                 </h3>
                                 <p className="text-zinc-600 dark:text-zinc-300">
-                                    We&apos;re constantly evolving and improving
-                                    based on user feedback and needs.
+                                    Publish a public page, copy its link, or
+                                    download a social card in three useful
+                                    ratios.
                                 </p>
                             </div>
                         </CardContent>
@@ -86,8 +87,8 @@ export default function AboutPage() {
                         Ready to Share Your Journey?
                     </h2>
                     <p className="text-zinc-600 dark:text-zinc-300 mb-8">
-                        Join our community of entrepreneurs and start
-                        documenting your journey today.
+                        Create a profile, document one honest post-mortem, and
+                        share the lesson when you are ready.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button

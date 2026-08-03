@@ -21,9 +21,10 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
  * Convex stores nested socials/business entries with an "id" field
  * (field names starting with "_" are reserved); components expect "_id".
  */
-function serializeUser(doc: Doc<"users">) {
-    const { _creationTime, createdAt, updatedAt, socials, business, ...rest } =
-        doc;
+type PublicUser = Omit<Doc<"users">, "clerkUserId" | "ownerTokenIdentifier">;
+
+function serializeUser(doc: PublicUser) {
+    const { _creationTime, createdAt, updatedAt, socials, business, ...rest } = doc;
     return {
         ...rest,
         bio: doc.bio ?? "",

@@ -13,6 +13,30 @@ const config = {
             colors: {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
+                bone: "var(--bone)",
+                surface: "var(--surface)",
+                ink: "var(--ink)",
+                muted: "var(--muted)",
+                faint: "var(--faint)",
+                line: "var(--line)",
+                vermilion: {
+                    DEFAULT: "var(--vermilion)",
+                    bright: "var(--vermilion-bright)",
+                },
+                acid: "var(--acid)",
+                cream: "var(--cream)",
+                night: "var(--night)",
+            },
+            fontFamily: {
+                display: ["var(--font-display)", "Arial Black", "sans-serif"],
+                sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+                mono: ["var(--font-mono)", "monospace"],
+                serif: ["var(--font-serif)", "Georgia", "serif"],
+            },
+            boxShadow: {
+                slab: "6px 6px 0 0 var(--ink)",
+                "slab-sm": "4px 4px 0 0 var(--ink)",
+                "slab-vermilion": "6px 6px 0 0 var(--vermilion)",
             },
             keyframes: {
                 "accordion-down": {

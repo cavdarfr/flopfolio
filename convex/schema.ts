@@ -46,6 +46,9 @@ export const cardTemplateValidator = v.union(
 export default defineSchema({
     users: defineTable({
         clerkUserId: v.string(),
+        // Canonical Convex auth identity. Legacy rows omit this field and
+        // temporarily fall back to clerkUserId until their next owned write.
+        ownerTokenIdentifier: v.optional(v.string()),
         name: v.string(),
         slug: v.string(),
         bio: v.optional(v.string()),
@@ -57,10 +60,12 @@ export default defineSchema({
         updatedAt: v.optional(v.number()),
     })
         .index("by_clerk_user", ["clerkUserId"])
+        .index("by_ownerTokenIdentifier", ["ownerTokenIdentifier"])
         .index("by_slug", ["slug"]),
 
     flops: defineTable({
         clerkUserId: v.string(),
+        ownerTokenIdentifier: v.optional(v.string()),
         slug: v.string(),
         title: v.string(),
         oneLiner: v.string(),
@@ -88,7 +93,21 @@ export default defineSchema({
         updatedAt: v.optional(v.number()),
     })
         .index("by_user", ["clerkUserId"])
-        .index("by_user_slug", ["clerkUserId", "slug"]),
+        .index("by_user_slug", ["clerkUserId", "slug"])
+        .index("by_user_and_published", ["clerkUserId", "published"]),
+
+    // Privacy-preserving aggregate counters. `flops.views` remains the
+    // read-only legacy baseline; all new view writes land here.
+    flopStats: defineTable({
+        flopId: v.id("flops"),
+        views: v.number(),
+        direct: v.number(),
+        copy: v.number(),
+        x: v.number(),
+        linkedin: v.number(),
+        native: v.number(),
+        unknown: v.number(),
+    }).index("by_flopId", ["flopId"]),
 
     feedback: defineTable({
         name: v.string(),

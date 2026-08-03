@@ -32,16 +32,19 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     if ("error" in result) return new Response("Not found", { status: 404 });
     const { flop, user } = result;
 
-    const template = (
-        CARD_TEMPLATES.includes(q.get("template") as CardTemplate)
-            ? q.get("template")
-            : flop.cardTemplate
-    ) as CardTemplate;
-    const format = (
-        ["og", "square", "story"].includes(q.get("format") ?? "")
-            ? q.get("format")
-            : "og"
-    ) as CardFormat;
+    const requestedTemplate = q.get("template");
+    if (requestedTemplate && !CARD_TEMPLATES.includes(requestedTemplate as CardTemplate)) {
+        return new Response("Invalid template", { status: 400 });
+    }
+    const template = (requestedTemplate ?? flop.cardTemplate) as CardTemplate;
+    const requestedFormat = q.get("format") ?? "og";
+    const formatAliases: Record<string, CardFormat> = {
+        og: "og",
+        square: "square",
+        portrait: "story",
+    };
+    const format = formatAliases[requestedFormat];
+    if (!format) return new Response("Invalid format", { status: 400 });
 
     const { width, height } = CARD_SIZES[format];
     const fonts = await loadCardFonts().catch(() => []);
@@ -51,7 +54,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     };
     if (q.get("download") === "1") {
         headers["Content-Disposition"] =
-            `attachment; filename="flopfolio-${flopSlug}-${format}.png"`;
+            `attachment; filename="flopfolio-${flopSlug.replace(/[^a-z0-9-]/gi, "-")}-${requestedFormat}.png"`;
     }
 
     return new ImageResponse(

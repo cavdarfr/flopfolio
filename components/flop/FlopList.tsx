@@ -18,7 +18,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Eye, Loader2, Pencil, Trash2 } from "lucide-react";
 
-export default function FlopList({ flops }: { flops: SerializedFlop[] }) {
+export default function FlopList({ flops, userSlug }: { flops: SerializedFlop[]; userSlug?: string }) {
     const router = useRouter();
     const { toast } = useToast();
     const [flopToDelete, setFlopToDelete] = useState<SerializedFlop | null>(
@@ -106,6 +106,13 @@ export default function FlopList({ flops }: { flops: SerializedFlop[] }) {
                                 </div>
                             </div>
                             <div className="flex shrink-0 items-center gap-1">
+                                {flop.published && userSlug && (
+                                    <Button variant="ghost" size="icon" asChild>
+                                        <Link href={`/${userSlug}/${flop.slug}`} aria-label={`View and share ${flop.title}`}>
+                                            <Eye className="h-4 w-4" />
+                                        </Link>
+                                    </Button>
+                                )}
                                 <Button variant="ghost" size="icon" asChild>
                                     <Link
                                         href={`/dashboard/flops/${flop._id}/edit`}

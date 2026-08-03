@@ -3,6 +3,26 @@
 packages:
   - "."
 
+# Force patched versions for known CVEs across the dependency tree
+# (GHSA-r28c-9q8g-f849, GHSA-6g55-p6wh-862q, GHSA-qx2v-qp2m-jg93,
+#  GHSA-f88m-g3jw-g9cj, GHSA-4x5r-pxfx-6jf8, GHSA-c2c7-rcm5-vvqj,
+#  GHSA-3v7f-55p6-f55p, GHSA-3jxr-9vmj-r5cp, GHSA-52cp-r559-cp3m,
+#  GHSA-h67p-54hq-rp68, GHSA-qjx8-664m-686j, GHSA-38f7-945m-qr2g,
+#  GHSA-664h-wqgq-64gw, GHSA-73rr-hh4g-fpgx, GHSA-25h7-pfq9-p65f,
+#  GHSA-rf6f-7fwh-wjgh)
+overrides:
+  postcss: ^8.5.25
+  sharp: ^0.35.3
+  "@babel/core": ^7.29.6
+  picomatch: ^2.3.2
+  js-yaml: ^4.3.0
+  js-cookie: ^3.0.7
+  effect: ^3.20.0
+  flatted: ^3.4.2
+  mongoose: ^9.7.2
+  diff: ^4.0.4
+  "minimatch@>=10>brace-expansion": ^5.0.7
+
 # Build-script approvals for pnpm 10+ (pnpm 9 ignores this key and runs all
 # postinstall scripts anyway).
 allowBuilds:

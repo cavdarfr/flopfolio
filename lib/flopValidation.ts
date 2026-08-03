@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { FLOP_OUTCOMES, CARD_TEMPLATES } from "@/lib/types/flop";
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 export const FlopSchema = z.object({
     slug: z
         .string()
@@ -13,12 +15,12 @@ export const FlopSchema = z.object({
         .min(10, "Give it a punchy one-liner (at least 10 characters)")
         .max(140, "Keep the one-liner under 140 characters"),
     sector: z.string().max(60).optional().or(z.literal("")),
-    startedYear: z.coerce.number().int().min(1970).max(2100),
+    startedYear: z.coerce.number().int().min(1970).max(CURRENT_YEAR),
     endedYear: z.coerce
         .number()
         .int()
         .min(1970)
-        .max(2100)
+        .max(CURRENT_YEAR)
         .optional()
         .or(z.literal("").transform(() => undefined)),
     outcome: z.enum(FLOP_OUTCOMES),
@@ -54,6 +56,14 @@ export const FlopSchema = z.object({
     logoUrl: z.string().url().optional().or(z.literal("")),
     cardTemplate: z.enum(CARD_TEMPLATES).default("tombstone"),
     published: z.boolean().default(true),
+}).superRefine((flop, ctx) => {
+    if (flop.endedYear !== undefined && flop.endedYear < flop.startedYear) {
+        ctx.addIssue({
+            code: "custom",
+            path: ["endedYear"],
+            message: "End year cannot be before the start year",
+        });
+    }
 });
 
 export type FlopFormValues = z.infer<typeof FlopSchema>;

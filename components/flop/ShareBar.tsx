@@ -2,111 +2,41 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
 import { Check, Copy, Download, Share2 } from "lucide-react";
 import XTwitterIcon from "@/components/icons/XTwitterIcon";
 import LinkedInIcon from "@/components/icons/LinkedInIcon";
+import { attributedUrl, buildShareTexts, cardUrl } from "@/lib/share/share-pack";
 
-type ShareBarProps = {
-    userSlug: string;
-    flopSlug: string;
-    title: string;
-    lesson?: string;
-};
+type Props = { userSlug: string; flopSlug: string; title: string; oneLiner: string; lesson?: string; canonicalUrl: string; updatedAt: string };
 
-export default function ShareBar({
-    userSlug,
-    flopSlug,
-    title,
-    lesson,
-}: ShareBarProps) {
-    const [copied, setCopied] = useState(false);
-
-    const url =
-        typeof window !== "undefined"
-            ? `${window.location.origin}/${userSlug}/${flopSlug}`
-            : `/${userSlug}/${flopSlug}`;
-
-    const shareText = lesson
-        ? `"${lesson}" — the story of ${title}, a flop worth reading:`
-        : `The story of ${title} — a flop worth reading:`;
-
-    const copyLink = async () => {
-        await navigator.clipboard.writeText(url);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+export default function ShareBar(props: Props) {
+    const [copied, setCopied] = useState<"link" | "post" | "lesson" | null>(null);
+    const [error, setError] = useState("");
+    const texts = buildShareTexts({ title: props.title, oneLiner: props.oneLiner, lesson: props.lesson, url: props.canonicalUrl });
+    const copy = async (kind: "link" | "post" | "lesson", value: string) => {
+        try { await navigator.clipboard.writeText(value); setCopied(kind); setError(""); setTimeout(() => setCopied(null), 2000); }
+        catch { setError("Copy failed. Select and copy the text manually."); }
     };
-
-    const cardBase = `/api/card/${userSlug}/${flopSlug}`;
-
+    const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(texts.x)}&url=${encodeURIComponent(attributedUrl(props.canonicalUrl, "x"))}`;
+    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(attributedUrl(props.canonicalUrl, "linkedin"))}`;
+    const formats = [
+        ["og", "Landscape", "1200 × 630"],
+        ["square", "Square", "1080 × 1080"],
+        ["portrait", "Portrait 4:5", "1080 × 1350"],
+    ] as const;
     return (
-        <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" size="sm" asChild>
-                <a
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <XTwitterIcon size={16} />
-                    <span className="ml-2">Post</span>
-                </a>
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-                <a
-                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <LinkedInIcon size={16} />
-                    <span className="ml-2">Share</span>
-                </a>
-            </Button>
-            <Button variant="outline" size="sm" onClick={copyLink}>
-                {copied ? (
-                    <Check className="h-4 w-4 text-emerald-600" />
-                ) : (
-                    <Copy className="h-4 w-4" />
-                )}
-                <span className="ml-2">{copied ? "Copied" : "Copy link"}</span>
-            </Button>
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button size="sm">
-                        <Download className="h-4 w-4" />
-                        <span className="ml-2">Download card</span>
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-56 p-2" align="end">
-                    <div className="flex flex-col gap-1">
-                        <a
-                            href={`${cardBase}?format=story&download=1`}
-                            className="rounded-md px-3 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                        >
-                            Instagram post{" "}
-                            <span className="text-zinc-400">1080 × 1350</span>
-                        </a>
-                        <a
-                            href={`${cardBase}?format=square&download=1`}
-                            className="rounded-md px-3 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                        >
-                            Square{" "}
-                            <span className="text-zinc-400">1080 × 1080</span>
-                        </a>
-                        <a
-                            href={`${cardBase}?format=og&download=1`}
-                            className="rounded-md px-3 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                        >
-                            Landscape{" "}
-                            <span className="text-zinc-400">1200 × 630</span>
-                        </a>
-                    </div>
-                </PopoverContent>
-            </Popover>
-            <Share2 className="ml-1 hidden h-4 w-4 text-zinc-300 sm:block" />
-        </div>
+        <section aria-labelledby="share-pack-title" className="border-2 border-ink bg-bone p-4">
+            <div className="flex items-center justify-between gap-3"><div><h2 id="share-pack-title" className="font-display uppercase">Share pack</h2><p className="text-xs text-muted">Copy a message or download a social card.</p></div><Share2 className="h-5 w-5 text-vermilion" /></div>
+            <div className="mt-4 flex flex-wrap gap-2">
+                <Button variant="outline" size="sm" asChild><a href={xUrl} target="_blank" rel="noopener noreferrer"><XTwitterIcon size={16} /> Post</a></Button>
+                <Button variant="outline" size="sm" asChild><a href={linkedInUrl} target="_blank" rel="noopener noreferrer"><LinkedInIcon size={16} /> Share</a></Button>
+                <Button variant="outline" size="sm" onClick={() => copy("link", attributedUrl(props.canonicalUrl, "copy"))}>{copied === "link" ? <Check /> : <Copy />} Copy link</Button>
+                <Button variant="outline" size="sm" onClick={() => copy("post", texts.post)}>{copied === "post" ? <Check /> : <Copy />} Copy post</Button>
+                {props.lesson && <Button variant="outline" size="sm" onClick={() => copy("lesson", texts.lesson)}>{copied === "lesson" ? <Check /> : <Copy />} Copy lesson</Button>}
+                {typeof navigator !== "undefined" && typeof navigator.share === "function" && <Button size="sm" onClick={() => navigator.share({ title: props.title, text: props.oneLiner, url: attributedUrl(props.canonicalUrl, "native") }).catch(() => undefined)}><Share2 /> Share</Button>}
+            </div>
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">{formats.map(([format, label, size]) => <a key={format} href={cardUrl(props.userSlug, props.flopSlug, format, props.updatedAt)} className="border border-line bg-surface px-3 py-2 text-sm hover:border-ink"><span className="flex items-center gap-2 font-medium"><Download className="h-4 w-4" />{label}</span><span className="text-xs text-faint">{size}</span></a>)}</div>
+            <p aria-live="polite" className="mt-2 text-xs text-vermilion">{error || (copied ? "Copied to clipboard." : "")}</p>
+        </section>
     );
 }
