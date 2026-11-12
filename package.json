@@ -10,7 +10,7 @@
     "optimize-images": "node scripts/optimize-images.js"
   },
   "dependencies": {
-    "@clerk/nextjs": "^7.0.8",
+    "@clerk/nextjs": "^7.2.4",
     "@dicebear/collection": "^9.4.2",
     "@dicebear/core": "^9.4.2",
     "@hookform/resolvers": "^5.2.2",
@@ -32,11 +32,11 @@
     "convex": "^1.42.1",
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^1.7.0",
-    "next": "16.2.2",
+    "next": "16.4.5",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.72.0",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.5",
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7",
     "uploadthing": "^7.7.4",
@@ -44,14 +44,20 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "mongoose": "^9.3.3",
+    "mongoose": "^9.11.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9.24.0",
-    "eslint-config-next": "16.2.2",
+    "eslint-config-next": "16.4.5",
     "postcss": "^8",
     "tailwindcss": "^3.4.17",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "effect": "^3.22.4",
+      "@dicebear/initials": "^9.4.3"
+    }
   }
 }

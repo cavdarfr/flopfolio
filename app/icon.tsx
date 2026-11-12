@@ -1,4 +1,6 @@
 import { ImageResponse } from 'next/og'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
  
 // Image metadata
 export const size = {
@@ -8,7 +10,12 @@ export const size = {
 export const contentType = 'image/png'
  
 // Image generation
-export default function Icon() {
+export default async function Icon() {
+  // Read the logo from disk: Next.js blocks fetching localhost/private
+  // addresses in ImageResponse (SSRF protection), which broke the build.
+  const logo = await readFile(join(process.cwd(), 'public/logo.png'))
+  const logoSrc = `data:image/png;base64,${logo.toString('base64')}`
+
   return new ImageResponse(
     (
       // ImageResponse JSX element
@@ -25,9 +32,7 @@ export default function Icon() {
         }}
       >
         <img
-          src={`${
-            process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-          }/logo.png`}
+          src={logoSrc}
           alt="Flopfolio"
           width={32}
           height={32}

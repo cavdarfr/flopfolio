@@ -1,5 +1,19 @@
 import type { Config } from "tailwindcss";
-import { withUt } from "uploadthing/tw";
+import plugin from "tailwindcss/plugin";
+
+// UploadThing variants, inlined from uploadthing/tw. Importing uploadthing/tw
+// (withUt or uploadthingPlugin) breaks the Turbopack build on Next 16.4: it
+// pulls the package's .d.cts files into the bundle.
+const uploadthingPlugin = plugin(({ addVariant }) => {
+    addVariant("ut-button", '&>*[data-ut-element="button"]');
+    addVariant("ut-allowed-content", '&>*[data-ut-element="allowed-content"]');
+    addVariant("ut-label", '&>*[data-ut-element="label"]');
+    addVariant("ut-upload-icon", '&>*[data-ut-element="upload-icon"]');
+    addVariant("ut-clear-btn", '&>*[data-ut-element="clear-btn"]');
+    addVariant("ut-readying", '&[data-state="readying"]');
+    addVariant("ut-ready", '&[data-state="ready"]');
+    addVariant("ut-uploading", '&[data-state="uploading"]');
+});
 
 const config = {
     darkMode: ["class"],
@@ -7,6 +21,8 @@ const config = {
         "./pages/**/*.{js,ts,jsx,tsx,mdx}",
         "./components/**/*.{js,ts,jsx,tsx,mdx}",
         "./app/**/*.{js,ts,jsx,tsx,mdx}",
+        // UploadThing UI classes (what withUt() added).
+        "./node_modules/@uploadthing/react/dist/**/*.js",
     ],
     theme: {
         extend: {
@@ -46,7 +62,7 @@ const config = {
         "bg-red-500",
         "bg-yellow-500",
     ],
-    plugins: [require("tailwindcss-animate")],
+    plugins: [require("tailwindcss-animate"), uploadthingPlugin],
 } satisfies Config;
 
-export default withUt(config);
+export default config;
